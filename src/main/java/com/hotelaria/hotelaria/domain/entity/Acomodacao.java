@@ -9,7 +9,7 @@ import java.util.List;
 public class Acomodacao {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  private Long numero;
+  private Long id;
   @Column(name = "valor_diaria")
   private BigDecimal valorDiaria;
   @Enumerated(EnumType.STRING)

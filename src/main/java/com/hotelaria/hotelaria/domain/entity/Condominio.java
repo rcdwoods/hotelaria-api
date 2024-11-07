@@ -8,7 +8,7 @@ import java.util.List;
 public class Condominio {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long numero;
+  private Long id;
   @OneToOne
   @JoinColumn(name = "hotel_id")
   private Hotel hotel;

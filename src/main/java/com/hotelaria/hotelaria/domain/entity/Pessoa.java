@@ -10,9 +10,9 @@ public class Pessoa {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
   private String nome;
+  @Column(name = "data_nascimento")
+  private LocalDate dataNascimento;
   @OneToOne
   @JoinColumn(name = "documento_identificacao_id")
   private DocumentoIdentificacao documentoIdentificacao;
-  @Column(name = "data_nascimento")
-  private LocalDate dataNascimento;
 }
