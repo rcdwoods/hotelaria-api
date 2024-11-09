@@ -12,12 +12,12 @@ CREATE TABLE hotel
 
 CREATE TABLE acomodacao
 (
-    id           BIGINT AUTO_INCREMENT NOT NULL,
-    valor_diaria DECIMAL(10, 2)        NOT NULL,
-    tipo         VARCHAR(60)           NOT NULL,
-    capacidade   BIGINT                NOT NULL,
-    hotel_id     BIGINT                NOT NULL,
-    PRIMARY KEY (id),
+    numero       BIGINT AUTO_INCREMENT NOT NULL,
+    hotel_id     BIGINT         NOT NULL,
+    valor_diaria DECIMAL(10, 2) NOT NULL,
+    tipo         VARCHAR(60)    NOT NULL,
+    capacidade   BIGINT         NOT NULL,
+    PRIMARY KEY (numero, hotel_id),
     FOREIGN KEY (hotel_id) REFERENCES hotel (id)
 );
 

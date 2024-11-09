@@ -1,5 +1,5 @@
 package com.hotelaria.hotelaria.domain.entity;
 
-public enum TipoEmpresa {
+public enum TipoEmpresaEnum {
   TURISMO, RESTAURANTE, BAR, TEATRO
 }

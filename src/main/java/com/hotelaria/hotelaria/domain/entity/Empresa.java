@@ -13,6 +13,10 @@ public class Empresa {
   private String cnpj;
   @OneToMany(mappedBy = "empresa")
   private List<ContratoAluguel> contratosDeAluguel;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "tipo_empresa")
+  private TipoEmpresaEnum tipoEmpresa;
+
   @OneToMany
   @JoinTable(
     name = "empresa_manutencao",

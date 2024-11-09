@@ -16,6 +16,11 @@ public class Hotel {
   private Long tamanho;
   @Column(name = "is_central")
   private boolean isCentral;
+  @Enumerated(EnumType.STRING)
+  private CategoriaEnum categoria;
+  @OneToOne
+  @JoinColumn(name = "registro_imobiliario_id")
+  private RegistroImobiliario registroImobiliario;
   @OneToMany(mappedBy = "hotel")
   private List<Acomodacao> acomodacoes;
 }
