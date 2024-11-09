@@ -10,6 +10,10 @@ public class Pessoa {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
   private String nome;
+  @Enumerated(EnumType.STRING)
+  private SexoEnum sexo;
+  private String email;
+  private String celular;
   @Column(name = "data_nascimento")
   private LocalDate dataNascimento;
   @OneToOne

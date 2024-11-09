@@ -12,5 +12,9 @@ public class Estacionamento {
   @Column(name = "valor_vaga")
   private BigDecimal valorVaga;
   private Integer capacidade;
+  @Enumerated(EnumType.STRING)
   private TipoEstacionamentoEnum tipo;
+  @ManyToOne
+  @JoinColumn(name = "hotel_id")
+  private Hotel hotel;
 }
