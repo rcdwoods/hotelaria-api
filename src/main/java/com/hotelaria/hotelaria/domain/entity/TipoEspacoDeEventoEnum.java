@@ -1,5 +1,5 @@
 package com.hotelaria.hotelaria.domain.entity;
 
-public enum TipoEspacoDeEvento {
+public enum TipoEspacoDeEventoEnum {
   SALA, AR_LIVRE
 }

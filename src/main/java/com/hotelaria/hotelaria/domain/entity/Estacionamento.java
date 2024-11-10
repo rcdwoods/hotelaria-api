@@ -9,8 +9,8 @@ public class Estacionamento {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
-  @Column(name = "valor_vaga")
-  private BigDecimal valorVaga;
+  @Column(name = "valor_diaria")
+  private BigDecimal valorDiaria;
   private Integer capacidade;
   @Enumerated(EnumType.STRING)
   private TipoEstacionamentoEnum tipo;

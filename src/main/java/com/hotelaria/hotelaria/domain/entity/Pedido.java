@@ -13,8 +13,8 @@ public class Pedido {
   private String descricao;
   private BigDecimal valor;
   @Column(name = "data_hora")
-  private LocalDateTime realizadoEm;
+  private LocalDateTime dataHora;
   @ManyToOne
-  @JoinColumn(name = "reserva_id")
-  private Reserva reserva;
+  @JoinColumn(name = "reserva_acomodacao_id")
+  private ReservaAcomodacao reservaAcomodacao;
 }

@@ -14,9 +14,9 @@ public class Condominio {
   private Hotel hotel;
   @ManyToMany
   @JoinTable(
-    name = "condominio_empresa",
-    joinColumns = @JoinColumn(name = "condominio_numero"),
-    inverseJoinColumns = @JoinColumn(name = "empresa_id")
+    name = "condominio_contrato_de_aluguel",
+    joinColumns = @JoinColumn(name = "condominio_id"),
+    inverseJoinColumns = @JoinColumn(name = "contrato_de_aluguel_id")
   )
-  private List<Empresa> empresas;
+  private List<ContratoAluguel> contratosDeAluguel;
 }

@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Reserva {
+public class ReservaAcomodacao {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -15,12 +15,12 @@ public class Reserva {
   @ManyToOne
   @JoinColumn(name = "acomodacao_id")
   private Acomodacao acomodacao;
-  @Column(name = "data_esperada_check_in")
+  @Column(name = "data_esperada_checkin")
   private LocalDateTime dataEsperadaCheckIn;
-  @Column(name = "data_esperada_check_out")
+  @Column(name = "data_esperada_checkout")
   private LocalDateTime dataEsperadaCheckOut;
-  @Column(name = "data_check_in")
+  @Column(name = "data_checkin")
   private LocalDateTime dataCheckIn;
-  @Column(name = "data_check_out")
+  @Column(name = "data_checkout")
   private LocalDateTime dataCheckOut;
 }

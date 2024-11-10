@@ -15,6 +15,8 @@ public class ReservaEstacionamento {
   @ManyToOne
   @JoinColumn(name = "hospede_id")
   private Hospede hospede;
-  private LocalDateTime dataHoraInicio;
-  private LocalDateTime dataHoraFim;
+  @Column(name = "data_checkin")
+  private LocalDateTime dataCheckin;
+  @Column(name = "data_checkout")
+  private LocalDateTime dataCheckout;
 }

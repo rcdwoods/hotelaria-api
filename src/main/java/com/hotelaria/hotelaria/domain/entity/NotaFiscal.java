@@ -11,15 +11,14 @@ public class NotaFiscal {
   @GeneratedValue
   private Long id;
   private Long numero;
-  private String serie;
   @Column(name = "data_emissao")
   private LocalDate dataEmissao;
-  @Column(name = "valor_total")
-  private BigDecimal valorTotal;
+  @Column(name = "valor")
+  private BigDecimal valor;
   @ManyToOne
   @JoinColumn(name = "documento_destinatario_id")
   private DocumentoIdentificacao documentoDestinarario;
   @ManyToOne
-  @JoinColumn(name = "documento_emitente_id")
-  private DocumentoIdentificacao documentoEmitente;
+  @JoinColumn(name = "documento_emissor_id")
+  private DocumentoIdentificacao documentoEmissor;
 }

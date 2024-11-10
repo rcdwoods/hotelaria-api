@@ -9,8 +9,11 @@ public class EspacoDeEvento {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
+  @OneToOne
+  @JoinColumn(name = "hotel_id")
+  private Hotel hotel;
   @ManyToMany
   private List<TipoDeUso> tiposDeUso;
   @OneToMany(mappedBy = "espacoDeEvento")
-  private List<Evento> eventos;
+  private List<LocalEvento> localEventos;
 }
