@@ -11,9 +11,6 @@ public class Entrega {
   private Long id;
   private String descricao;
   @ManyToOne
-  @JoinColumn(name = "acomodacao_id")
-  private Acomodacao acomodacao;
-  @ManyToOne
   @JoinColumn(name = "empresa_remetente_id")
   private Empresa empresaRemetente;
   @Column(name = "data_hora")

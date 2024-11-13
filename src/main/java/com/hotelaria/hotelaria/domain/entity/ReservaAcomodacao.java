@@ -13,7 +13,10 @@ public class ReservaAcomodacao {
   @JoinColumn(name = "hospede_id")
   private Hospede hospede;
   @ManyToOne
-  @JoinColumn(name = "acomodacao_id")
+  @JoinColumns({
+    @JoinColumn(name = "numero", referencedColumnName = "numero"),
+    @JoinColumn(name = "hotel_id", referencedColumnName = "hotel_id")
+  })
   private Acomodacao acomodacao;
   @Column(name = "data_esperada_checkin")
   private LocalDateTime dataEsperadaCheckIn;

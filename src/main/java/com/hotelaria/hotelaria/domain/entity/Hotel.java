@@ -1,10 +1,14 @@
 package com.hotelaria.hotelaria.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class Hotel {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -21,6 +25,6 @@ public class Hotel {
   @OneToOne
   @JoinColumn(name = "registro_imobiliario_id")
   private RegistroImobiliario registroImobiliario;
-  @OneToMany(mappedBy = "hotel")
+  @OneToMany(mappedBy = "acomodacaoId.hotel")
   private List<Acomodacao> acomodacoes;
 }
