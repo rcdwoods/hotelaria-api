@@ -12,7 +12,7 @@ CREATE TABLE registro_imobiliario
 (
     id                         BIGINT AUTO_INCREMENT NOT NULL,
     numero_registro_prefeitura VARCHAR(60) NOT NULL,
-    registrado_em              DATE        NOT NULL,
+    data_registro              DATE        NOT NULL,
     georreferenciamento_id     BIGINT      NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (georreferenciamento_id) REFERENCES georreferenciamento (id)
@@ -25,6 +25,7 @@ CREATE TABLE hotel
     setor                   VARCHAR(60)  NOT NULL,
     tamanho                 BIGINT       NOT NULL,
     is_central              BOOLEAN      NOT NULL,
+    categoria               VARCHAR(60)  NOT NULL,
     registro_imobiliario_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (registro_imobiliario_id) REFERENCES registro_imobiliario (id)
@@ -359,3 +360,24 @@ CREATE TABLE local_evento_manutencao
     FOREIGN KEY (local_evento_id) REFERENCES local_evento (id),
     FOREIGN KEY (manutencao_id) REFERENCES manutencao (id)
 );
+
+INSERT INTO georreferenciamento (latitude, longitude)
+VALUES (-23.550520, -46.633308), -- São Paulo, SP
+       (-22.906847, -43.172897), -- Rio de Janeiro, RJ
+       (-15.780148, -47.929170), -- Brasília, DF
+       (-12.971431, -38.501400), -- Salvador, BA
+       (-25.428356, -49.273251); -- Curitiba, PR
+
+INSERT INTO registro_imobiliario (numero_registro_prefeitura, data_registro, georreferenciamento_id)
+VALUES ('REG12345', '2022-05-10', 1),
+       ('REG67890', '2021-11-23', 2),
+       ('REG54321', '2020-07-15', 3),
+       ('REG09876', '2019-03-18', 4),
+       ('REG11223', '2023-01-25', 5);
+
+INSERT INTO hotel (nome_fantasia, setor, tamanho, is_central, categoria, registro_imobiliario_id)
+VALUES ('Hotel Central Plaza', 'FAMILIA', 3000, TRUE, 'TRADICIONAL', 1),
+       ('Pousada dos Ventos', 'FAMILIA', 1200, FALSE, 'TRADICIONAL', 2),
+       ('Resort Sol e Mar', 'ADULTOS', 5000, FALSE, 'RESORT', 3),
+       ('Hotel Urbano Premium', 'ADULTOS', 2500, TRUE, 'Executivo', 4),
+       ('Villa Verde Eco Lodge', 'ADULTOS', 1800, FALSE, 'TRADICIONAL', 5);
