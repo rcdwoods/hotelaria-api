@@ -1,5 +1,23 @@
 CREATE SCHEMA hotelaria;
 
+CREATE TABLE georreferenciamento
+(
+    id        BIGINT AUTO_INCREMENT NOT NULL,
+    latitude  DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE registro_imobiliario
+(
+    id                         BIGINT AUTO_INCREMENT NOT NULL,
+    numero_registro_prefeitura VARCHAR(60) NOT NULL,
+    registrado_em              DATE        NOT NULL,
+    georreferenciamento_id     BIGINT      NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (georreferenciamento_id) REFERENCES georreferenciamento (id)
+);
+
 CREATE TABLE hotel
 (
     id                      BIGINT AUTO_INCREMENT NOT NULL,
@@ -29,6 +47,43 @@ CREATE TABLE acomodacao
     capacidade   BIGINT         NOT NULL,
     PRIMARY KEY (numero, hotel_id),
     FOREIGN KEY (hotel_id) REFERENCES hotel (id)
+);
+
+CREATE TABLE documento_identificacao
+(
+    id     BIGINT AUTO_INCREMENT NOT NULL,
+    tipo   VARCHAR(60) NOT NULL,
+    numero VARCHAR(30) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE pessoa
+(
+    id                         BIGINT AUTO_INCREMENT NOT NULL,
+    nome                       VARCHAR(200) NOT NULL,
+    cpf                        VARCHAR(14)  NOT NULL,
+    data_nascimento            DATE         NOT NULL,
+    sexo                       VARCHAR(30)  NOT NULL,
+    documento_identificacao_id BIGINT       NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (documento_identificacao_id) REFERENCES documento_identificacao (id)
+);
+
+CREATE TABLE hospede
+(
+    id            BIGINT AUTO_INCREMENT NOT NULL,
+    pessoa_id     BIGINT   NOT NULL,
+    registrado_em DATETIME NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (pessoa_id) REFERENCES pessoa (id)
+);
+
+CREATE TABLE funcionario
+(
+    id        BIGINT AUTO_INCREMENT NOT NULL,
+    pessoa_id BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (pessoa_id) REFERENCES pessoa (id)
 );
 
 CREATE TABLE reserva_acomodacao
@@ -139,43 +194,6 @@ CREATE TABLE acomodacao_entrega
     FOREIGN KEY (entrega_id) REFERENCES entrega (id)
 );
 
-CREATE TABLE documento_identificacao
-(
-    id     BIGINT AUTO_INCREMENT NOT NULL,
-    tipo   VARCHAR(60) NOT NULL,
-    numero VARCHAR(30) NOT NULL,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE pessoa
-(
-    id                         BIGINT AUTO_INCREMENT NOT NULL,
-    nome                       VARCHAR(200) NOT NULL,
-    cpf                        VARCHAR(14)  NOT NULL,
-    data_nascimento            DATE         NOT NULL,
-    sexo                       VARCHAR(30)  NOT NULL,
-    documento_identificacao_id BIGINT       NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (documento_identificacao_id) REFERENCES documento_identificacao (id)
-);
-
-CREATE TABLE hospede
-(
-    id            BIGINT AUTO_INCREMENT NOT NULL,
-    pessoa_id     BIGINT   NOT NULL,
-    registrado_em DATETIME NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (pessoa_id) REFERENCES pessoa (id)
-);
-
-CREATE TABLE funcionario
-(
-    id        BIGINT AUTO_INCREMENT NOT NULL,
-    pessoa_id BIGINT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (pessoa_id) REFERENCES pessoa (id)
-);
-
 CREATE TABLE contrato_de_trabalho
 (
     id             BIGINT AUTO_INCREMENT NOT NULL,
@@ -237,8 +255,7 @@ CREATE TABLE produto
     id    BIGINT AUTO_INCREMENT NOT NULL,
     nome  VARCHAR(120) NOT NULL,
     marca VARCHAR(60)  NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (estoque_id) REFERENCES estoque (id)
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE cozinha
@@ -258,7 +275,7 @@ CREATE TABLE estoque_produto
     PRIMARY KEY (produto_id, estoque_id),
     FOREIGN KEY (produto_id) REFERENCES produto (id),
     FOREIGN KEY (estoque_id) REFERENCES estoque (id)
-)
+);
 
 CREATE TABLE estacionamento
 (
@@ -281,24 +298,6 @@ CREATE TABLE reserva_estacionamento
     PRIMARY KEY (id),
     FOREIGN KEY (hospede_id) REFERENCES hospede (id),
     FOREIGN KEY (estacionamento_id) REFERENCES estacionamento (id)
-);
-
-CREATE TABLE registro_imobiliario
-(
-    id                         BIGINT AUTO_INCREMENT NOT NULL,
-    numero_registro_prefeitura VARCHAR(60) NOT NULL,
-    registrado_em              DATE        NOT NULL,
-    georreferenciamento_id     BIGINT      NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (georreferenciamento_id) REFERENCES georreferenciamento (id)
-);
-
-CREATE TABLE georreferenciamento
-(
-    id        BIGINT AUTO_INCREMENT NOT NULL,
-    latitude  DECIMAL(10, 8) NOT NULL,
-    longitude DECIMAL(11, 8) NOT NULL,
-    PRIMARY KEY (id),
 );
 
 CREATE TABLE nota_fiscal
