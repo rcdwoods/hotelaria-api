@@ -25,6 +25,6 @@ public class Hotel {
   @OneToOne
   @JoinColumn(name = "registro_imobiliario_id")
   private RegistroImobiliario registroImobiliario;
-  @OneToMany(mappedBy = "acomodacaoId.hotel")
+  @OneToMany(mappedBy = "acomodacaoId.hotel", fetch = FetchType.LAZY)
   private List<Acomodacao> acomodacoes;
 }

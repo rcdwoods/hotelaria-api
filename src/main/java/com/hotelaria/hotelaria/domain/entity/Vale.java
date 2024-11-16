@@ -16,7 +16,7 @@ public class Vale {
   @Column(name = "percentual_de_desconto")
   private Integer percentualDeDesconto;
   @Column(name = "cnpj_fornecedor")
-  private String cnpjForncedor;
+  private String cnpjFornecedor;
   @ManyToOne
   @JoinColumn(name = "tipo_contrato_beneficiario_id")
   private TipoContratoDeTrabalho tipoContratoBeneficiario;

@@ -19,4 +19,6 @@ public class Condominio {
     inverseJoinColumns = @JoinColumn(name = "contrato_de_aluguel_id")
   )
   private List<ContratoAluguel> contratosDeAluguel;
+  @OneToMany(mappedBy = "id.condominio")
+  private List<SalaCondominio> salas;
 }

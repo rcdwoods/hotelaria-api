@@ -16,11 +16,4 @@ public class Empresa {
   @Enumerated(EnumType.STRING)
   @Column(name = "tipo_empresa")
   private TipoEmpresaEnum tipoEmpresa;
-  @OneToMany
-  @JoinTable(
-    name = "empresa_manutencao",
-    joinColumns = @JoinColumn(name = "empresa_id"),
-    inverseJoinColumns = @JoinColumn(name = "manutencao_id")
-  )
-  private List<Manutencao> manutencoes;
 }

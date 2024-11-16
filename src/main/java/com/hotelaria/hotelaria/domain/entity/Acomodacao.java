@@ -21,21 +21,21 @@ public class Acomodacao {
   @ManyToMany
   @JoinTable(
     name = "acomodacao_politica_de_uso",
-    joinColumns = {@JoinColumn(name = "acomodacao_numero"), @JoinColumn(name = "hotel_id")},
+    joinColumns = {@JoinColumn(name = "numero_acomodacao"), @JoinColumn(name = "hotel_id")},
     inverseJoinColumns = @JoinColumn(name = "politica_de_uso_id")
   )
-  List<PoliticaDeUso> politicasDeUso;
+  private List<PoliticaDeUso> politicasDeUso;
   @OneToMany
   @JoinTable(
     name = "acomodacao_manutencao",
-    joinColumns = {@JoinColumn(name = "acomodacao_numero"), @JoinColumn(name = "hotel_id")},
+    joinColumns = {@JoinColumn(name = "numero_acomodacao"), @JoinColumn(name = "hotel_id")},
     inverseJoinColumns = @JoinColumn(name = "manutencao_id")
   )
   private List<Manutencao> manutencoes;
   @OneToMany
   @JoinTable(
     name = "acomodacao_entrega",
-    joinColumns = {@JoinColumn(name = "acomodacao_numero"), @JoinColumn(name = "hotel_id")},
+    joinColumns = {@JoinColumn(name = "numero_acomodacao"), @JoinColumn(name = "hotel_id")},
     inverseJoinColumns = @JoinColumn(name = "entrega_id")
   )
   private List<Entrega> entregas;
