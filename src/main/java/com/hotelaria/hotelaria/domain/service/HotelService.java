@@ -13,6 +13,7 @@ public class HotelService {
   private final HotelRepository hotelRepository;
 
   public List<Hotel> retrieveAll() {
-    return hotelRepository.findAll();
+    List<Hotel> hoteisEncontrados = hotelRepository.findAll();
+    return hoteisEncontrados;
   }
 }
