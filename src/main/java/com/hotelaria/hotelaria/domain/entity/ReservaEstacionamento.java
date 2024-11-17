@@ -13,8 +13,8 @@ public class ReservaEstacionamento {
   @JoinColumn(name = "estacionamento_id")
   private Estacionamento estacionamento;
   @ManyToOne
-  @JoinColumn(name = "hospede_id")
-  private Hospede hospede;
+  @JoinColumn(name = "reserva_acomodacao_id")
+  private ReservaAcomodacao reservaAcomodacao;
   @Column(name = "data_checkin")
   private LocalDateTime dataCheckin;
   @Column(name = "data_checkout")
