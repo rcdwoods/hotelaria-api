@@ -11,12 +11,8 @@ public class Estoque {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
   private Integer capacidade;
-  @ManyToMany
-  @JoinTable(
-    name = "estoque_produto",
-    joinColumns = @JoinColumn(name = "estoque_id"),
-    inverseJoinColumns = @JoinColumn(name = "produto_id")
-  )
-  private List<Produto> produtos;
-  private LocalDateTime atualizadoEm;
+  @OneToMany(mappedBy = "id.estoque")
+  private List<EstoqueProduto> produtos;
+  @Column(name = "data_atualizacao")
+  private LocalDateTime data_atualizacao;
 }
