@@ -13,6 +13,11 @@ public class EspacoDeEvento {
   @JoinColumn(name = "hotel_id")
   private Hotel hotel;
   @ManyToMany
+  @JoinTable(
+    name = "espaco_de_evento_tipo_de_uso",
+    joinColumns = @JoinColumn(name = "espaco_de_evento_id"),
+    inverseJoinColumns = @JoinColumn(name = "tipo_de_uso_id")
+  )
   private List<TipoDeUso> tiposDeUso;
   @OneToMany(mappedBy = "espacoDeEvento")
   private List<LocalEvento> localEventos;
