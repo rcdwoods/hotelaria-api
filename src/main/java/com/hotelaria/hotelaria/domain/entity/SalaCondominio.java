@@ -10,7 +10,7 @@ public class SalaCondominio {
   private SalaCondominioId id;
   @Column(name = "metros_quadrados")
   private Integer metrosQuadrados;
-  @OneToMany
+  @ManyToMany
   @JoinTable(
     name = "sala_condominio_manutencao",
     joinColumns = {@JoinColumn(name = "numero"), @JoinColumn(name = "condominio_id")},

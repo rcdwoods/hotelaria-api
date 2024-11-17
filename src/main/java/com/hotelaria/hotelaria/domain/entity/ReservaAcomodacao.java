@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,4 +31,10 @@ public class ReservaAcomodacao {
   private LocalDateTime dataCheckIn;
   @Column(name = "data_checkout")
   private LocalDateTime dataCheckOut;
+  @OneToMany(mappedBy = "reserva")
+  private List<Entrega> entregas;
+  @OneToMany(mappedBy = "reserva")
+  private List<Pedido> pedidos;
+  @OneToMany(mappedBy = "reservaAcomodacao")
+  private List<ReservaEstacionamento> reservasEstacionamento;
 }

@@ -1,3 +1,4 @@
+DROP SCHEMA IF EXISTS hotelaria;
 CREATE SCHEMA hotelaria;
 USE
 hotelaria;
@@ -87,7 +88,7 @@ CREATE TABLE hospede
 (
     id            BIGINT AUTO_INCREMENT NOT NULL,
     pessoa_id     BIGINT   NOT NULL,
-    registrado_em DATETIME NOT NULL,
+    data_registro DATETIME NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (pessoa_id) REFERENCES pessoa (id)
 );
@@ -205,22 +206,11 @@ CREATE TABLE entrega
     id                   BIGINT AUTO_INCREMENT NOT NULL,
     descricao            VARCHAR(120) NOT NULL,
     data_hora            DATETIME     NOT NULL,
-    numero_acomodacao    BIGINT       NOT NULL,
-    hotel_id             BIGINT       NOT NULL,
+    reserva_id           BIGINT       NOT NULL,
     empresa_remetente_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (numero_acomodacao, hotel_id) REFERENCES acomodacao (numero, hotel_id),
+    FOREIGN KEY (reserva_id) REFERENCES reserva_acomodacao (id),
     FOREIGN KEY (empresa_remetente_id) REFERENCES empresa (id)
-);
-
-CREATE TABLE acomodacao_entrega
-(
-    numero_acomodacao BIGINT NOT NULL,
-    hotel_id          BIGINT NOT NULL,
-    entrega_id        BIGINT NOT NULL,
-    PRIMARY KEY (numero_acomodacao, hotel_id, entrega_id),
-    FOREIGN KEY (numero_acomodacao, hotel_id) REFERENCES acomodacao (numero, hotel_id),
-    FOREIGN KEY (entrega_id) REFERENCES entrega (id)
 );
 
 CREATE TABLE tipo_contrato_de_trabalho
@@ -272,10 +262,10 @@ CREATE TABLE vale
 
 CREATE TABLE estoque
 (
-    id            BIGINT AUTO_INCREMENT NOT NULL,
-    capacidade    BIGINT   NOT NULL,
-    atualizado_em DATETIME NOT NULL,
-    hotel_id      BIGINT   NOT NULL,
+    id               BIGINT AUTO_INCREMENT NOT NULL,
+    capacidade       BIGINT   NOT NULL,
+    data_atualizacao DATETIME NOT NULL,
+    hotel_id         BIGINT   NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (hotel_id) REFERENCES hotel (id)
 );
@@ -292,8 +282,10 @@ CREATE TABLE cozinha
 (
     id         BIGINT AUTO_INCREMENT NOT NULL,
     nome       VARCHAR(120) NOT NULL,
+    hotel_id   BIGINT       NOT NULL,
     estoque_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
+    FOREIGN KEY (hotel_id) REFERENCES hotel (id),
     FOREIGN KEY (estoque_id) REFERENCES estoque (id)
 );
 
@@ -320,13 +312,13 @@ CREATE TABLE estacionamento
 
 CREATE TABLE reserva_estacionamento
 (
-    id                BIGINT AUTO_INCREMENT NOT NULL,
-    data_checkin      DATE   NOT NULL,
-    data_checkout     DATE   NOT NULL,
-    hospede_id        BIGINT NOT NULL,
-    estacionamento_id BIGINT NOT NULL,
+    id                    BIGINT AUTO_INCREMENT NOT NULL,
+    data_checkin          DATE   NOT NULL,
+    data_checkout         DATE   NOT NULL,
+    reserva_acomodacao_id BIGINT NOT NULL,
+    estacionamento_id     BIGINT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (hospede_id) REFERENCES hospede (id),
+    FOREIGN KEY (reserva_acomodacao_id) REFERENCES reserva_acomodacao (id),
     FOREIGN KEY (estacionamento_id) REFERENCES estacionamento (id)
 );
 
@@ -408,8 +400,7 @@ INSERT INTO hotel (nome_fantasia, setor, tamanho, is_central, categoria, registr
 VALUES ('Hotel Central Plaza', 'FAMILIA', 3000, TRUE, 'TRADICIONAL', 1),
        ('Pousada dos Ventos', 'FAMILIA', 1200, FALSE, 'TRADICIONAL', 2),
        ('Resort Sol e Mar', 'ADULTOS', 5000, FALSE, 'RESORT', 3),
-       ('Hotel Urbano Premium', 'ADULTOS', 2500, TRUE, 'POUSADA', 4),
-       ('Villa Verde Eco Lodge', 'ADULTOS', 1800, FALSE, 'TRADICIONAL', 5);
+       ('Hotel Urbano Premium', 'ADULTOS', 2500, TRUE, 'POUSADA', 4);
 
 INSERT INTO acomodacao (numero, hotel_id, valor_diaria, tipo, capacidade)
 VALUES (1, 1, 150.00, 'STANDARD', 2),
@@ -503,6 +494,7 @@ VALUES (1, 1, 1),
        (5, 4, 4),
        (5, 4, 2);
 
+--- os documentos da linha 31 a 34 são cnpjs dos hoteis, e os da 35 a 38 são de associações, governo, etc.
 INSERT INTO documento_identificacao (tipo, numero)
 VALUES ('PASSAPORTE', 'X12345678'),
        ('RG', '1234567890'),
@@ -533,7 +525,15 @@ VALUES ('PASSAPORTE', 'X12345678'),
        ('CPF', '777.888.999-00'),
        ('CPF', '888.999.000-11'),
        ('CPF', '999.000.111-22'),
-       ('CPF', '000.111.222-33');
+       ('CPF', '000.111.222-33'),
+       ('CNPJ', '12.345.678/0001-99'),
+       ('CNPJ', '23.456.789/0001-88'),
+       ('CNPJ', '34.567.890/0001-77'),
+       ('CNPJ', '45.678.901/0001-66'),
+       ('CNPJ', '56.789.012/0001-55'),
+       ('CNPJ', '67.890.123/0001-44'),
+       ('CNPJ', '78.901.234/0001-33'),
+       ('CNPJ', '89.012.345/0001-22');
 
 INSERT INTO pessoa (nome, data_nascimento, celular, email, sexo, documento_identificacao_id)
 VALUES ('João Silva', '1985-03-15', '11987654321', 'joao.silva@gmail.com', 'MASCULINO', 1),
@@ -568,7 +568,7 @@ VALUES ('João Silva', '1985-03-15', '11987654321', 'joao.silva@gmail.com', 'MAS
        ('Patrícia Mendes', '1986-12-01', '101010101', 'patricia.mendes@gmail.com', 'Feminino', 30);
 
 
-INSERT INTO hospede (pessoa_id, registrado_em)
+INSERT INTO hospede (pessoa_id, data_registro)
 VALUES (1, '2024-11-01 14:23:00'),
        (2, '2024-11-01 15:45:00'),
        (3, '2024-11-02 09:15:00'),
@@ -599,8 +599,8 @@ VALUES (21, 'joao.silva@hotel.com', 1),
        (26, 'fernanda.costa@hotel.com', 3),
        (27, 'lucas.almeida@hotel.com', 4),
        (28, 'juliana.martins@hotel.com', 4),
-       (29, 'gabriel.rocha@hotel.com', 5),
-       (30, 'patricia.mendes@hotel.com', 5);
+       (29, 'gabriel.rocha@hotel.com', 1),
+       (30, 'patricia.mendes@hotel.com', 4);
 
 INSERT INTO tipo_contrato_de_trabalho (nome)
 VALUES ('CLT'),
@@ -623,8 +623,7 @@ VALUES ('Recepcionista', 1, '2023-01-15', 180, 2500.00, FALSE, 1),
 INSERT INTO condominio (hotel_id, nome)
 VALUES (1, 'Condomínio Central Plaza'),
        (2, 'Condomínio Pousada dos Ventos'),
-       (4, 'Condomínio Hotel Urbano Premium'),
-       (5, 'Condomínio Villa Verde Eco Lodge');
+       (4, 'Condomínio Hotel Urbano Premium');
 
 INSERT INTO sala_condominio (numero, condominio_id, metros_quadrados)
 VALUES (1, 1, 50),
@@ -641,12 +640,7 @@ VALUES (1, 1, 50),
        (2, 3, 40),
        (3, 3, 50),
        (4, 3, 60),
-       (5, 3, 70),
-       (1, 4, 20),
-       (2, 4, 30),
-       (3, 4, 40),
-       (4, 4, 50),
-       (5, 4, 60);
+       (5, 3, 70);
 
 INSERT INTO empresa (razao_social, nome_fantasia, cnpj)
 VALUES ('MC Donalds LTDA', 'MC Donalds', '12345678000101'),
@@ -659,9 +653,9 @@ INSERT INTO contrato_aluguel (data_inicio, data_fim, dia_pagamento, valor, empre
                               condominio_id)
 VALUES ('2024-11-01', '2025-11-01', 5, 10000.00, 1, 1, 1),
        ('2024-11-02', '2025-11-02', 10, 11000.00, 2, 2, 1),
-       ('2024-11-03', '2025-11-03', 15, 15000.00, 3, 3, 2),
-       ('2024-11-04', '2025-11-04', 20, 9000.00, 4, 4, 3),
-       ('2024-11-05', '2025-11-05', 25, 3000.00, 5, 5, 4);
+       ('2024-11-03', '2025-11-03', 15, 15000.00, 3, 1, 2),
+       ('2024-11-04', '2025-11-04', 20, 9000.00, 4, 1, 3),
+       ('2024-11-05', '2025-11-05', 25, 3000.00, 5, 2, 3);
 
 INSERT INTO espaco_de_evento (hotel_id)
 VALUES (1),
@@ -671,9 +665,7 @@ VALUES (1),
        (3),
        (3),
        (4),
-       (4),
-       (5),
-       (5);
+       (4);
 
 INSERT INTO tipo_de_uso (nome, descricao)
 VALUES ('Casamento', 'Eventos de celebração matrimonial'),
@@ -693,8 +685,240 @@ VALUES ('Salão Principal', 1, 200, 1),
        ('Auditório', 3, 300, 3),
        ('Sala de Reunião', 4, 20, 4),
        ('Espaço ao Ar Livre', 5, 150, 5),
-       ('Pavilhão', 6, 500, 6),
-       ('Teatro', 7, 400, 7),
-       ('Anfiteatro', 8, 350, 8),
-       ('Palco Aberto', 9, 100, 9),
-       ('Sala de Palestra', 10, 120, 10);
+       ('Teatro', 7, 400, 6),
+       ('Palco Aberto', 9, 100, 7),
+       ('Sala de Palestra', 10, 120, 8);
+
+INSERT INTO vale (tipo, descricao, valor, data_hora, percentual_de_desconto, tipo_contrato_beneficiario_id)
+VALUES ('Alimentação', 'Vale para compras em supermercados', 800.00, '2024-01-10 09:00:00', 3.00, 1),
+       ('Alimentação', 'Vale para compras em supermercados', 300.00, '2024-01-10 09:00:00', 3.00, 3),
+       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 300.00, '2024-01-15 08:30:00', 2.00, 1),
+       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 250.00, '2024-01-15 08:30:00', 2.00, 2),
+       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 300.00, '2024-01-15 08:30:00', 0.00, 3),
+       ('Refeição', 'Vale refeição para uso em restaurantes', 600.00, '2024-01-20 12:00:00', 3.00, 1),
+       ('Refeição', 'Vale refeição para uso em restaurantes', 600.00, '2024-01-20 12:00:00', 3.00, 3);
+
+INSERT INTO estacionamento (tipo, capacidade, valor_diaria, hotel_id)
+VALUES ('COBERTO', 50, 25.00, 1),
+       ('AR_LIVRE', 100, 15.00, 2),
+       ('COBERTO', 100, 15.00, 2),
+       ('COBERTO', 20, 50.00, 3),
+       ('COBERTO', 30, 20.00, 4),
+       ('AR_LIVRE', 70, 15.00, 4);
+
+INSERT INTO reserva_acomodacao (data_esperada_checkin, data_esperada_checkout, data_checkin, data_checkout,
+                                numero_acomodacao, hotel_id, hospede_id)
+VALUES ('2024-11-01 14:00:00', '2024-11-03 12:00:00', '2024-11-01 15:00:00', '2024-11-03 11:30:00', 1, 1, 1),
+       ('2024-11-02 14:00:00', '2024-11-05 12:00:00', '2024-11-02 14:30:00', '2024-11-05 12:00:00', 2, 1, 2),
+       ('2024-11-04 14:00:00', '2024-11-06 12:00:00', '2024-11-04 14:15:00', '2024-11-06 14:15:00', 3, 2, 3),
+       ('2024-11-05 14:00:00', '2024-11-07 12:00:00', NULL, NULL, 1, 2, 4),
+       ('2024-11-06 14:00:00', '2024-11-08 12:00:00', '2024-11-06 14:05:00', '2024-11-06 14:05:00', 2, 3, 5),
+       ('2024-11-07 14:00:00', '2024-11-09 12:00:00', NULL, NULL, 1, 3, 6),
+       ('2024-11-08 14:00:00', '2024-11-10 12:00:00', '2024-11-08 15:00:00', '2024-11-10 11:45:00', 5, 4, 7),
+       ('2024-11-09 14:00:00', '2024-11-11 12:00:00', '2024-11-09 14:45:00', '2024-11-11 14:45:00', 6, 4, 8),
+       ('2024-11-10 14:00:00', '2024-11-12 12:00:00', '2024-11-10 15:00:00', '2024-11-12 11:50:00', 6, 1, 9),
+       ('2024-11-28 14:00:00', '2024-12-02 12:00:00', NULL, NULL, 1, 1, 10),
+       ('2024-11-29 14:00:00', '2024-12-03 12:00:00', NULL, NULL, 2, 1, 11),
+       ('2024-11-30 14:00:00', '2024-12-04 12:00:00', NULL, NULL, 3, 1, 12),
+       ('2024-12-01 14:00:00', '2024-12-05 12:00:00', NULL, NULL, 4, 2, 13),
+       ('2024-12-02 14:00:00', '2024-12-06 12:00:00', NULL, NULL, 5, 2, 14),
+       ('2024-12-03 14:00:00', '2024-12-07 12:00:00', NULL, NULL, 6, 2, 15),
+       ('2024-12-04 14:00:00', '2024-12-08 12:00:00', NULL, NULL, 7, 3, 16),
+       ('2024-12-05 14:00:00', '2024-12-09 12:00:00', NULL, NULL, 8, 1, 17),
+       ('2024-12-06 14:00:00', '2024-12-10 12:00:00', NULL, NULL, 9, 1, 18),
+       ('2024-12-07 14:00:00', '2024-12-11 12:00:00', NULL, NULL, 10, 4, 19);
+
+INSERT INTO reserva_estacionamento (data_checkin, data_checkout, reserva_acomodacao_id, estacionamento_id)
+VALUES ('2024-11-01', '2024-11-03', 1, 1),
+       ('2024-11-02', '2024-11-05', 2, 1),
+       ('2024-11-04', '2024-11-06', 3, 2),
+       ('2024-11-05', '2024-11-07', 4, 3),
+       ('2024-11-06', '2024-11-08', 5, 4),
+       ('2024-11-07', '2024-11-09', 6, 5),
+       ('2024-11-08', '2024-11-10', 7, 6),
+       ('2024-11-09', '2024-11-11', 8, 1),
+       ('2024-11-10', '2024-11-12', 9, 3),
+       ('2024-11-11', '2024-11-13', 10, 6);
+
+INSERT INTO estoque (capacidade, data_atualizacao, hotel_id)
+VALUES (2000, '2024-11-01 10:00:00', 1),
+       (2500, '2024-11-01 11:00:00', 2),
+       (1800, '2024-11-01 12:00:00', 3),
+       (2200, '2024-11-01 13:00:00', 4);
+
+INSERT INTO produto (nome, marca)
+VALUES ('Arroz', 'Marca A'),
+       ('Feijão', 'Marca B'),
+       ('Açúcar', 'Marca C'),
+       ('Óleo', 'Marca D'),
+       ('Macarrão', 'Marca E'),
+       ('Farinha', 'Marca F'),
+       ('Sal', 'Marca G'),
+       ('Pimenta', 'Marca H'),
+       ('Café', 'Marca I'),
+       ('Chá', 'Marca J'),
+       ('Leite', 'Marca K'),
+       ('Manteiga', 'Marca L'),
+       ('Presunto', 'Marca M'),
+       ('Queijo', 'Marca N'),
+       ('Tomate', 'Marca O'),
+       ('Alface', 'Marca P'),
+       ('Cebola', 'Marca Q'),
+       ('Alho', 'Marca R'),
+       ('Batata', 'Marca S'),
+       ('Cenoura', 'Marca T'),
+       ('Banana', 'Marca U'),
+       ('Maçã', 'Marca V'),
+       ('Laranja', 'Marca W'),
+       ('Melancia', 'Marca X'),
+       ('Uva', 'Marca Y'),
+       ('Limão', 'Marca Z'),
+       ('Frango', 'Marca AA'),
+       ('Carne', 'Marca AB'),
+       ('Peixe', 'Marca AC'),
+       ('Ovos', 'Marca AD'),
+       ('Iogurte', 'Marca AE'),
+       ('Suco', 'Marca AF'),
+       ('Água', 'Marca AG'),
+       ('Refrigerante', 'Marca AH'),
+       ('Chocolate', 'Marca AI'),
+       ('Biscoitos', 'Marca AJ'),
+       ('Pão', 'Marca AK'),
+       ('Pizza', 'Marca AL'),
+       ('Salgadinhos', 'Marca AM'),
+       ('Molho de tomate', 'Marca AN');
+
+INSERT INTO cozinha (nome, hotel_id, estoque_id)
+VALUES ('Cozinha Principal', 1, 1),
+       ('Cozinha Gourmet', 2, 2),
+       ('Cozinha Internacional', 3, 3),
+       ('Cozinha Local', 4, 4);
+
+INSERT INTO estoque_produto (produto_id, estoque_id, quantidade)
+VALUES (1, 1, 50),
+       (2, 1, 60),
+       (3, 1, 40),
+       (4, 1, 30),
+       (5, 1, 20),
+       (6, 1, 10),
+       (7, 1, 70),
+       (8, 1, 80),
+       (9, 1, 25),
+       (10, 1, 15),
+       (11, 2, 100),
+       (12, 2, 90),
+       (13, 2, 110),
+       (14, 2, 120),
+       (15, 2, 130),
+       (16, 2, 140),
+       (17, 2, 150),
+       (18, 2, 160),
+       (19, 2, 170),
+       (20, 2, 180),
+       (21, 3, 60),
+       (22, 3, 70),
+       (23, 3, 80),
+       (24, 3, 90),
+       (25, 3, 100),
+       (26, 3, 110),
+       (27, 3, 120),
+       (28, 3, 130),
+       (29, 3, 140),
+       (30, 3, 150),
+       (31, 4, 200),
+       (32, 4, 190),
+       (33, 4, 180),
+       (34, 4, 170),
+       (35, 4, 160),
+       (36, 4, 150),
+       (37, 4, 140),
+       (38, 4, 130),
+       (39, 4, 120),
+       (40, 4, 110);
+
+INSERT INTO manutencao (descricao, data_hora_inicio, data_hora_fim)
+VALUES ('Troca de encanamento', '2024-11-10 08:00:00', '2024-11-10 12:00:00'),
+       ('Revisão elétrica', '2024-11-11 09:00:00', '2024-11-11 15:00:00'),
+       ('Pintura externa', '2024-11-12 08:00:00', '2024-11-12 18:00:00'),
+       ('Reforma no telhado', '2024-11-13 07:00:00', '2024-11-13 19:00:00'),
+       ('Manutenção de ar-condicionado', '2024-11-14 10:00:00', '2024-11-14 14:00:00');
+
+INSERT INTO acomodacao_manutencao (numero_acomodacao, hotel_id, manutencao_id)
+VALUES (1, 1, 1),
+       (2, 1, 2),
+       (1, 2, 3),
+       (1, 3, 4),
+       (1, 4, 5);
+
+INSERT INTO sala_condominio_manutencao (numero_sala_condominio, condominio_id, manutencao_id)
+VALUES (1, 1, 1),
+       (2, 1, 2),
+       (1, 2, 3),
+       (1, 3, 4),
+       (1, 3, 5);
+
+INSERT INTO local_evento_manutencao (local_evento_id, manutencao_id)
+VALUES (1, 1),
+       (2, 2),
+       (1, 3),
+       (1, 4),
+       (1, 5);
+
+INSERT INTO entrega (descricao, data_hora, reserva_id, empresa_remetente_id)
+VALUES ('Entrega de almoço', '2024-11-18 10:00:00', 1, 1),
+       ('Entrega de alimento', '2024-11-18 14:00:00', 2, 2),
+       ('Entrega de café da manhã', '2024-11-19 09:00:00', 3, 3),
+       ('Entrega de bebidas', '2024-11-19 16:30:00', 4, 4),
+       ('Entrega de presentes', '2024-11-20 11:00:00', 5, 5),
+       ('Entrega de itens decorativos', '2024-11-20 15:00:00', 6, 2),
+       ('Entrega de eletrônicos', '2024-11-21 08:30:00', 7, 3),
+       ('Entrega de materiais de escritório', '2024-11-21 13:00:00', 8, 1),
+       ('Entrega de frutas e legumes', '2024-11-22 07:00:00', 9, 4);
+
+--- tabelas restantes: nota_fiscal, pagamento
+INSERT INTO plano_de_saude (nome, cnpj_fornecedor, valor_mensal, possui_coparticipacao, tipo_contrato_beneficiario_id)
+VALUES ('Amil Básico', '12.345.678/0001-99', 350.00, FALSE, 1),
+       ('Amil Premium', '12.345.678/0001-99', 650.00, TRUE, 1),
+       ('Bradesco Saúde Básico', '23.456.789/0001-88', 400.00, FALSE, 1),
+       ('Bradesco Saúde Premium', '23.456.789/0001-88', 750.00, TRUE, 1),
+       ('São Cristóvão Básico', '34.567.890/0001-77', 380.00, FALSE, 1),
+       ('São Cristóvão Premium', '34.567.890/0001-77', 700.00, TRUE, 1),
+       ('Sul América Básico', '45.678.901/0001-66', 370.00, FALSE, 1),
+       ('Sul América Premium', '45.678.901/0001-66', 720.00, TRUE, 1);
+
+
+INSERT INTO pedido (descricao, valor, data_hora, reserva_acomodacao_id)
+VALUES ('Café da manhã', 30.00, '2024-11-01 07:30:00', 1),
+       ('Almoço', 50.00, '2024-11-01 12:00:00', 1),
+       ('Serviço de quarto', 40.00, '2024-11-01 20:00:00', 1),
+       ('Café da manhã', 30.00, '2024-11-02 07:30:00', 2),
+       ('Almoço', 50.00, '2024-11-02 12:00:00', 2),
+       ('Serviço de quarto', 40.00, '2024-11-02 20:00:00', 2),
+       ('Café da manhã', 30.00, '2024-11-04 07:30:00', 3),
+       ('Almoço', 50.00, '2024-11-04 12:00:00', 3),
+       ('Serviço de quarto', 40.00, '2024-11-04 20:00:00', 3),
+       ('Café da manhã', 30.00, '2024-11-05 07:30:00', 4);
+
+INSERT INTO nota_fiscal (numero, data_emissao, valor, documento_emissor_id, documento_destinatario_id)
+VALUES ('NF-1001', '2024-11-01', 5000.00, 31, 35),
+       ('NF-1002', '2024-11-02', 1500.00, 31, 35),
+       ('NF-1003', '2024-11-03', 8000.00, 32, 35),
+       ('NF-1004', '2024-11-04', 12000.00, 33, 36),
+       ('NF-1005', '2024-11-05', 2500.00, 34, 36),
+       ('NF-1006', '2024-11-06', 3000.00, 31, 36),
+       ('NF-1007', '2024-11-07', 7000.00, 32, 37),
+       ('NF-1008', '2024-11-08', 4500.00, 33, 37),
+       ('NF-1009', '2024-11-09', 3500.00, 34, 38),
+       ('NF-1010', '2024-11-10', 6200.00, 31, 38);
+
+INSERT INTO pagamento (titulo, descricao, nota_fiscal_id)
+VALUES ('Pagamento Governo', 'Pagamento referente a impostos municipais', 1),
+       ('Pagamento Associação', 'Pagamento de taxas de associação empresarial', 2),
+       ('Pagamento Terceiro', 'Pagamento de serviços de terceiros para manutenção', 3),
+       ('Pagamento Fornecedor', 'Pagamento de fornecedores de material', 4),
+       ('Pagamento Governo', 'Pagamento referente a impostos estaduais', 5),
+       ('Pagamento Associação', 'Pagamento de taxa de associação comercial', 6),
+       ('Pagamento Terceiro', 'Pagamento de serviços de segurança terceirizados', 7),
+       ('Pagamento Fornecedor', 'Pagamento de fornecedor de tecnologia', 8),
+       ('Pagamento Governo', 'Pagamento de contribuições federais', 9),
+       ('Pagamento Associação', 'Pagamento de taxas associativas regionais', 10);
