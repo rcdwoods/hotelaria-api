@@ -1,4 +1,6 @@
 CREATE SCHEMA hotelaria;
+USE
+hotelaria;
 
 CREATE TABLE georreferenciamento
 (
@@ -106,8 +108,8 @@ CREATE TABLE reserva_acomodacao
     id                     BIGINT AUTO_INCREMENT NOT NULL,
     data_esperada_checkin  DATETIME NOT NULL,
     data_esperada_checkout DATETIME NOT NULL,
-    data_checkin           DATETIME NOT NULL,
-    data_checkout          DATETIME NOT NULL,
+    data_checkin           DATETIME NULL,
+    data_checkout          DATETIME NULL,
     numero_acomodacao      BIGINT   NOT NULL,
     hotel_id               BIGINT   NOT NULL,
     hospede_id             BIGINT   NOT NULL,
@@ -221,25 +223,26 @@ CREATE TABLE acomodacao_entrega
     FOREIGN KEY (entrega_id) REFERENCES entrega (id)
 );
 
-CREATE TABLE contrato_de_trabalho
-(
-    id             BIGINT AUTO_INCREMENT NOT NULL,
-    cargo          VARCHAR(60)    NOT NULL,
-    tipo           VARCHAR(60)    NOT NULL,
-    data_inicio    DATE           NOT NULL,
-    horas_mes      BIGINT         NOT NULL,
-    salario_mes    DECIMAL(10, 2) NOT NULL,
-    finalizado     BOOLEAN        NOT NULL,
-    funcionario_id BIGINT         NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (funcionario_id) REFERENCES funcionario (id)
-);
-
 CREATE TABLE tipo_contrato_de_trabalho
 (
     id   BIGINT AUTO_INCREMENT NOT NULL,
     nome VARCHAR(60) NOT NULL,
     PRIMARY KEY (id)
+);
+
+CREATE TABLE contrato_de_trabalho
+(
+    id                           BIGINT AUTO_INCREMENT NOT NULL,
+    cargo                        VARCHAR(60)    NOT NULL,
+    tipo_contrato_de_trabalho_id BIGINT         NOT NULL,
+    data_inicio                  DATE           NOT NULL,
+    horas_mes                    BIGINT         NOT NULL,
+    salario_mes                  DECIMAL(10, 2) NOT NULL,
+    finalizado                   BOOLEAN        NOT NULL,
+    funcionario_id               BIGINT         NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (tipo_contrato_de_trabalho_id) REFERENCES tipo_contrato_de_trabalho (id),
+    FOREIGN KEY (funcionario_id) REFERENCES funcionario (id)
 );
 
 CREATE TABLE plano_de_saude
@@ -388,11 +391,11 @@ CREATE TABLE local_evento_manutencao
 );
 
 INSERT INTO georreferenciamento (latitude, longitude)
-VALUES (-23.550520, -46.633308), -- São Paulo, SP
-       (-22.906847, -43.172897), -- Rio de Janeiro, RJ
-       (-15.780148, -47.929170), -- Brasília, DF
-       (-12.971431, -38.501400), -- Salvador, BA
-       (-25.428356, -49.273251); -- Curitiba, PR
+VALUES (-23.550520, -46.633308),
+       (-22.906847, -43.172897),
+       (-15.780148, -47.929170),
+       (-12.971431, -38.501400),
+       (-25.428356, -49.273251);
 
 INSERT INTO registro_imobiliario (numero_registro_prefeitura, data_registro, georreferenciamento_id)
 VALUES ('REG12345', '2022-05-10', 1),
@@ -520,29 +523,49 @@ VALUES ('PASSAPORTE', 'X12345678'),
        ('RG', '7890123456'),
        ('CPF', '45678901234'),
        ('PASSAPORTE', 'D98765432'),
-       ('RG', '8901234567');
+       ('RG', '8901234567'),
+       ('CPF', '111.222.333-44'),
+       ('CPF', '222.333.444-55'),
+       ('CPF', '333.444.555-66'),
+       ('CPF', '444.555.666-77'),
+       ('CPF', '555.666.777-88'),
+       ('CPF', '666.777.888-99'),
+       ('CPF', '777.888.999-00'),
+       ('CPF', '888.999.000-11'),
+       ('CPF', '999.000.111-22'),
+       ('CPF', '000.111.222-33');
 
 INSERT INTO pessoa (nome, data_nascimento, celular, email, sexo, documento_identificacao_id)
-VALUES ('João Silva', '1985-03-15', '11987654321', 'joao.silva@example.com', 'MASCULINO', 1),
-       ('Maria Oliveira', '1992-07-23', '11998765432', 'maria.oliveira@example.com', 'FEMININO', 2),
-       ('Carlos Souza', '1978-11-05', '11987651234', 'carlos.souza@example.com', 'MASCULINO', 3),
-       ('Ana Costa', '1990-02-28', '11987654322', 'ana.costa@example.com', 'FEMININO', 4),
-       ('Pedro Santos', '1983-05-12', '11987654323', 'pedro.santos@example.com', 'MASCULINO', 5),
-       ('Julia Mendes', '1995-09-18', '11987654324', 'julia.mendes@example.com', 'FEMININO', 6),
-       ('Bruno Lima', '1989-08-04', '11987654325', 'bruno.lima@example.com', 'MASCULINO', 7),
-       ('Renata Araújo', '1982-12-14', '11987654326', 'renata.araujo@example.com', 'FEMININO', 8),
-       ('Fernando Almeida', '1975-10-27', '11987654327', 'fernando.almeida@example.com', 'MASCULINO', 9),
-       ('Luiza Rocha', '1997-01-30', '11987654328', 'luiza.rocha@example.com', 'FEMININO', 10),
-       ('Gabriel Reis', '1981-04-17', '11987654329', 'gabriel.reis@example.com', 'MASCULINO', 11),
-       ('Tatiana Gomes', '1994-06-09', '11987654330', 'tatiana.gomes@example.com', 'FEMININO', 12),
-       ('Ricardo Barbosa', '1979-09-20', '11987654331', 'ricardo.barbosa@example.com', 'MASCULINO', 13),
-       ('Carolina Mello', '1991-03-22', '11987654332', 'carolina.mello@example.com', 'FEMININO', 14),
-       ('Gustavo Pereira', '1987-07-15', '11987654333', 'gustavo.pereira@example.com', 'MASCULINO', 15),
-       ('Patricia Silva', '1993-12-29', '11987654334', 'patricia.silva@example.com', 'FEMININO', 16),
-       ('André Fernandes', '1980-11-01', '11987654335', 'andre.fernandes@example.com', 'MASCULINO', 17),
-       ('Beatriz Ribeiro', '1996-10-11', '11987654336', 'beatriz.ribeiro@example.com', 'FEMININO', 18),
-       ('Felipe Matos', '1984-08-08', '11987654337', 'felipe.matos@example.com', 'MASCULINO', 19),
-       ('Sofia Martins', '1998-02-25', '11987654338', 'sofia.martins@example.com', 'FEMININO', 20);
+VALUES ('João Silva', '1985-03-15', '11987654321', 'joao.silva@gmail.com', 'MASCULINO', 1),
+       ('Maria Oliveira', '1992-07-23', '11998765432', 'maria.oliveira@gmail.com', 'FEMININO', 2),
+       ('Carlos Souza', '1978-11-05', '11987651234', 'carlos.souza@gmail.com', 'MASCULINO', 3),
+       ('Ana Costa', '1990-02-28', '11987654322', 'ana.costa@gmail.com', 'FEMININO', 4),
+       ('Pedro Santos', '1983-05-12', '11987654323', 'pedro.santos@gmail.com', 'MASCULINO', 5),
+       ('Julia Mendes', '1995-09-18', '11987654324', 'julia.mendes@gmail.com', 'FEMININO', 6),
+       ('Bruno Lima', '1989-08-04', '11987654325', 'bruno.lima@gmail.com', 'MASCULINO', 7),
+       ('Renata Araújo', '1982-12-14', '11987654326', 'renata.araujo@gmail.com', 'FEMININO', 8),
+       ('Fernando Almeida', '1975-10-27', '11987654327', 'fernando.almeida@gmail.com', 'MASCULINO', 9),
+       ('Luiza Rocha', '1997-01-30', '11987654328', 'luiza.rocha@gmail.com', 'FEMININO', 10),
+       ('Gabriel Reis', '1981-04-17', '11987654329', 'gabriel.reis@gmail.com', 'MASCULINO', 11),
+       ('Tatiana Gomes', '1994-06-09', '11987654330', 'tatiana.gomes@gmail.com', 'FEMININO', 12),
+       ('Ricardo Barbosa', '1979-09-20', '11987654331', 'ricardo.barbosa@gmail.com', 'MASCULINO', 13),
+       ('Carolina Mello', '1991-03-22', '11987654332', 'carolina.mello@gmail.com', 'FEMININO', 14),
+       ('Gustavo Pereira', '1987-07-15', '11987654333', 'gustavo.pereira@gmail.com', 'MASCULINO', 15),
+       ('Patricia Silva', '1993-12-29', '11987654334', 'patricia.silva@gmail.com', 'FEMININO', 16),
+       ('André Fernandes', '1980-11-01', '11987654335', 'andre.fernandes@gmail.com', 'MASCULINO', 17),
+       ('Beatriz Ribeiro', '1996-10-11', '11987654336', 'beatriz.ribeiro@gmail.com', 'FEMININO', 18),
+       ('Felipe Matos', '1984-08-08', '11987654337', 'felipe.matos@gmail.com', 'MASCULINO', 19),
+       ('Sofia Martins', '1998-02-25', '11987654338', 'sofia.martins@gmail.com', 'FEMININO', 20),
+       ('João Silva', '1990-05-12', '123456789', 'joao.silva@gmail.com', 'Masculino', 21),
+       ('Maria Oliveira', '1985-08-25', '987654321', 'maria.oliveira@gmail.com', 'Feminino', 22),
+       ('Carlos Souza', '1993-02-18', '123123123', 'carlos.souza@gmail.com', 'Masculino', 23),
+       ('Ana Santos', '1998-07-30', '321321321', 'ana.santos@gmail.com', 'Feminino', 24),
+       ('Pedro Lima', '1987-03-05', '555555555', 'pedro.lima@gmail.com', 'Masculino', 25),
+       ('Fernanda Costa', '1991-11-12', '666666666', 'fernanda.costa@gmail.com', 'Feminino', 26),
+       ('Lucas Almeida', '1994-09-23', '777777777', 'lucas.almeida@gmail.com', 'Masculino', 27),
+       ('Juliana Martins', '1989-01-15', '888888888', 'juliana.martins@gmail.com', 'Feminino', 28),
+       ('Gabriel Rocha', '1992-06-17', '999999999', 'gabriel.rocha@gmail.com', 'Masculino', 29),
+       ('Patrícia Mendes', '1986-12-01', '101010101', 'patricia.mendes@gmail.com', 'Feminino', 30);
 
 
 INSERT INTO hospede (pessoa_id, registrado_em)
@@ -566,6 +589,36 @@ VALUES (1, '2024-11-01 14:23:00'),
        (18, '2024-11-06 07:30:00'),
        (19, '2024-11-06 08:45:00'),
        (20, '2024-11-06 09:55:00');
+
+INSERT INTO funcionario (pessoa_id, email, hotel_id)
+VALUES (21, 'joao.silva@hotel.com', 1),
+       (22, 'maria.oliveira@hotel.com', 1),
+       (23, 'carlos.souza@hotel.com', 2),
+       (24, 'ana.santos@hotel.com', 2),
+       (25, 'pedro.lima@hotel.com', 3),
+       (26, 'fernanda.costa@hotel.com', 3),
+       (27, 'lucas.almeida@hotel.com', 4),
+       (28, 'juliana.martins@hotel.com', 4),
+       (29, 'gabriel.rocha@hotel.com', 5),
+       (30, 'patricia.mendes@hotel.com', 5);
+
+INSERT INTO tipo_contrato_de_trabalho (nome)
+VALUES ('CLT'),
+       ('PJ'),
+       ('Estágio');
+
+INSERT INTO contrato_de_trabalho (cargo, tipo_contrato_de_trabalho_id, data_inicio, horas_mes, salario_mes, finalizado,
+                                  funcionario_id)
+VALUES ('Recepcionista', 1, '2023-01-15', 180, 2500.00, FALSE, 1),
+       ('Gerente', 1, '2022-06-01', 200, 5000.00, FALSE, 2),
+       ('Camareira', 1, '2023-03-01', 180, 2000.00, FALSE, 3),
+       ('Cozinheiro', 1, '2022-12-15', 180, 3000.00, FALSE, 4),
+       ('Garçom', 1, '2023-04-01', 180, 2200.00, FALSE, 5),
+       ('Segurança', 1, '2023-02-01', 180, 2800.00, FALSE, 6),
+       ('Manutenção', 1, '2023-05-01', 180, 2600.00, FALSE, 7),
+       ('Marketing', 1, '2022-08-01', 200, 4000.00, FALSE, 8),
+       ('Financeiro', 1, '2023-01-10', 200, 4500.00, FALSE, 9),
+       ('Limpeza', 1, '2023-03-20', 180, 1800.00, FALSE, 10);
 
 INSERT INTO condominio (hotel_id, nome)
 VALUES (1, 'Condomínio Central Plaza'),
@@ -609,3 +662,39 @@ VALUES ('2024-11-01', '2025-11-01', 5, 10000.00, 1, 1, 1),
        ('2024-11-03', '2025-11-03', 15, 15000.00, 3, 3, 2),
        ('2024-11-04', '2025-11-04', 20, 9000.00, 4, 4, 3),
        ('2024-11-05', '2025-11-05', 25, 3000.00, 5, 5, 4);
+
+INSERT INTO espaco_de_evento (hotel_id)
+VALUES (1),
+       (1),
+       (2),
+       (2),
+       (3),
+       (3),
+       (4),
+       (4),
+       (5),
+       (5);
+
+INSERT INTO tipo_de_uso (nome, descricao)
+VALUES ('Casamento', 'Eventos de celebração matrimonial'),
+       ('Festa de Aniversário', 'Comemorações de aniversários'),
+       ('Formatura', 'Celebrações de conclusão de cursos'),
+       ('Reunião Corporativa', 'Reuniões de negócios e apresentações'),
+       ('Treinamento', 'Espaço para workshops e treinamentos'),
+       ('Feira de Exposições', 'Feiras e exposições comerciais'),
+       ('Lançamento de Produto', 'Eventos de lançamento de novos produtos'),
+       ('Conferência', 'Conferências e seminários'),
+       ('Show Musical', 'Apresentações musicais e culturais'),
+       ('Palestra', 'Eventos educativos e informativos');
+
+INSERT INTO local_evento (tipo_de_espaco, tipo_de_uso_id, capacidade, espaco_evento_id)
+VALUES ('Salão Principal', 1, 200, 1),
+       ('Sala VIP', 2, 50, 2),
+       ('Auditório', 3, 300, 3),
+       ('Sala de Reunião', 4, 20, 4),
+       ('Espaço ao Ar Livre', 5, 150, 5),
+       ('Pavilhão', 6, 500, 6),
+       ('Teatro', 7, 400, 7),
+       ('Anfiteatro', 8, 350, 8),
+       ('Palco Aberto', 9, 100, 9),
+       ('Sala de Palestra', 10, 120, 10);
