@@ -19,6 +19,8 @@ public class EspacoDeEvento {
     inverseJoinColumns = @JoinColumn(name = "tipo_de_uso_id")
   )
   private List<TipoDeUso> tiposDeUso;
+  @Column(name = "tamanho_em_metros_total")
+  private Integer tamanhoEmMetrosTotal;
   @OneToMany(mappedBy = "espacoDeEvento")
   private List<LocalEvento> localEventos;
 }

@@ -31,9 +31,9 @@ public class ReservaAcomodacao {
   private LocalDateTime dataCheckIn;
   @Column(name = "data_checkout")
   private LocalDateTime dataCheckOut;
-  @OneToMany(mappedBy = "reserva")
+  @OneToMany(mappedBy = "reservaAcomodacao")
   private List<Entrega> entregas;
-  @OneToMany(mappedBy = "reserva")
+  @OneToMany(mappedBy = "reservaAcomodacao")
   private List<Pedido> pedidos;
   @OneToMany(mappedBy = "reservaAcomodacao")
   private List<ReservaEstacionamento> reservasEstacionamento;

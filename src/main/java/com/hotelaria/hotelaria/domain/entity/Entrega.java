@@ -12,7 +12,7 @@ public class Entrega {
   private String descricao;
   @ManyToOne
   @JoinColumn(name = "reserva_id")
-  private ReservaAcomodacao reserva;
+  private ReservaAcomodacao reservaAcomodacao;
   @ManyToOne
   @JoinColumn(name = "empresa_remetente_id")
   private Empresa empresaRemetente;

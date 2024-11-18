@@ -77,7 +77,7 @@ CREATE TABLE pessoa
     nome                       VARCHAR(200) NOT NULL,
     data_nascimento            DATE         NOT NULL,
     celular                    VARCHAR(20)  NOT NULL,
-    email                      VARCHAR(120) NOT NULL,
+    email                      VARCHAR(120) NOT NULL UNIQUE,
     sexo                       VARCHAR(30)  NOT NULL,
     documento_identificacao_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
@@ -97,7 +97,7 @@ CREATE TABLE funcionario
 (
     id        BIGINT AUTO_INCREMENT NOT NULL,
     pessoa_id BIGINT       NOT NULL,
-    email     VARCHAR(120) NOT NULL,
+    email     VARCHAR(120) NOT NULL UNIQUE,
     hotel_id  BIGINT       NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (pessoa_id) REFERENCES pessoa (id),
@@ -265,9 +265,7 @@ CREATE TABLE estoque
     id               BIGINT AUTO_INCREMENT NOT NULL,
     capacidade       BIGINT   NOT NULL,
     data_atualizacao DATETIME NOT NULL,
-    hotel_id         BIGINT   NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (hotel_id) REFERENCES hotel (id)
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE produto
@@ -280,10 +278,11 @@ CREATE TABLE produto
 
 CREATE TABLE cozinha
 (
-    id         BIGINT AUTO_INCREMENT NOT NULL,
-    nome       VARCHAR(120) NOT NULL,
-    hotel_id   BIGINT       NOT NULL,
-    estoque_id BIGINT       NOT NULL,
+    id                BIGINT AUTO_INCREMENT NOT NULL,
+    nome              VARCHAR(120) NOT NULL,
+    hotel_id          BIGINT       NOT NULL,
+    estoque_id        BIGINT       NOT NULL,
+    tamanho_em_metros BIGINT       NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (hotel_id) REFERENCES hotel (id),
     FOREIGN KEY (estoque_id) REFERENCES estoque (id)
@@ -347,8 +346,9 @@ CREATE TABLE pagamento
 
 CREATE TABLE espaco_de_evento
 (
-    id       BIGINT AUTO_INCREMENT NOT NULL,
-    hotel_id BIGINT NOT NULL,
+    id                      BIGINT AUTO_INCREMENT NOT NULL,
+    hotel_id                BIGINT NOT NULL,
+    tamanho_em_metros_total BIGINT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (hotel_id) REFERENCES hotel (id)
 );
@@ -363,11 +363,12 @@ CREATE TABLE tipo_de_uso
 
 CREATE TABLE local_evento
 (
-    id               BIGINT AUTO_INCREMENT NOT NULL,
-    tipo_de_espaco   VARCHAR(60) NOT NULL,
-    tipo_de_uso_id   BIGINT      NOT NULL,
-    capacidade       BIGINT      NOT NULL,
-    espaco_evento_id BIGINT      NOT NULL,
+    id                BIGINT AUTO_INCREMENT NOT NULL,
+    tipo_de_espaco    VARCHAR(60) NOT NULL,
+    tipo_de_uso_id    BIGINT      NOT NULL,
+    capacidade        BIGINT      NOT NULL,
+    tamanho_em_metros BIGINT      NOT NULL,
+    espaco_evento_id  BIGINT      NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (espaco_evento_id) REFERENCES espaco_de_evento (id),
     FOREIGN KEY (tipo_de_uso_id) REFERENCES tipo_de_uso (id)
@@ -517,14 +518,14 @@ VALUES ('PASSAPORTE', 'X12345678'),
        ('PASSAPORTE', 'D98765432'),
        ('RG', '8901234567'),
        ('CPF', '111.222.333-44'),
-       ('CPF', '222.333.444-55'),
+       ('CNPJ', '03.255.567/0004-96'),
        ('CPF', '333.444.555-66'),
        ('CPF', '444.555.666-77'),
        ('CPF', '555.666.777-88'),
        ('CPF', '666.777.888-99'),
        ('CPF', '777.888.999-00'),
        ('CPF', '888.999.000-11'),
-       ('CPF', '999.000.111-22'),
+       ('CNPJ', '01.234.567/0001-99'),
        ('CPF', '000.111.222-33'),
        ('CNPJ', '12.345.678/0001-99'),
        ('CNPJ', '23.456.789/0001-88'),
@@ -556,16 +557,16 @@ VALUES ('João Silva', '1985-03-15', '11987654321', 'joao.silva@gmail.com', 'MAS
        ('Beatriz Ribeiro', '1996-10-11', '11987654336', 'beatriz.ribeiro@gmail.com', 'FEMININO', 18),
        ('Felipe Matos', '1984-08-08', '11987654337', 'felipe.matos@gmail.com', 'MASCULINO', 19),
        ('Sofia Martins', '1998-02-25', '11987654338', 'sofia.martins@gmail.com', 'FEMININO', 20),
-       ('João Silva', '1990-05-12', '123456789', 'joao.silva@gmail.com', 'Masculino', 21),
-       ('Maria Oliveira', '1985-08-25', '987654321', 'maria.oliveira@gmail.com', 'Feminino', 22),
-       ('Carlos Souza', '1993-02-18', '123123123', 'carlos.souza@gmail.com', 'Masculino', 23),
-       ('Ana Santos', '1998-07-30', '321321321', 'ana.santos@gmail.com', 'Feminino', 24),
-       ('Pedro Lima', '1987-03-05', '555555555', 'pedro.lima@gmail.com', 'Masculino', 25),
-       ('Fernanda Costa', '1991-11-12', '666666666', 'fernanda.costa@gmail.com', 'Feminino', 26),
-       ('Lucas Almeida', '1994-09-23', '777777777', 'lucas.almeida@gmail.com', 'Masculino', 27),
-       ('Juliana Martins', '1989-01-15', '888888888', 'juliana.martins@gmail.com', 'Feminino', 28),
-       ('Gabriel Rocha', '1992-06-17', '999999999', 'gabriel.rocha@gmail.com', 'Masculino', 29),
-       ('Patrícia Mendes', '1986-12-01', '101010101', 'patricia.mendes@gmail.com', 'Feminino', 30);
+       ('João Silva', '1990-05-12', '123456789', 'silva.joao@gmail.com', 'FEMININO', 21),
+       ('Maria Oliveira', '1985-08-25', '987654321', 'maria.oliveira@gmail.com', 'FEMININO', 22),
+       ('Carlos Souza', '1993-02-18', '123123123', 'carlos.souza@gmail.com', 'MASCULINO', 23),
+       ('Ana Santos', '1998-07-30', '321321321', 'ana.santos@gmail.com', 'FEMININO', 24),
+       ('Pedro Lima', '1987-03-05', '555555555', 'pedro.lima@gmail.com', 'MASCULINO', 25),
+       ('Fernanda Costa', '1991-11-12', '666666666', 'fernanda.costa@gmail.com', 'FEMININO', 26),
+       ('Lucas Almeida', '1994-09-23', '777777777', 'lucas.almeida@gmail.com', 'MASCULINO', 27),
+       ('Juliana Martins', '1989-01-15', '888888888', 'juliana.martins@gmail.com', 'FEMININO', 28),
+       ('Gabriel Rocha', '1992-06-17', '999999999', 'gabriel.rocha@gmail.com', 'MASCULINO', 29),
+       ('Patrícia Mendes', '1986-12-01', '101010101', 'patricia.mendes@gmail.com', 'FEMININO', 30);
 
 
 INSERT INTO hospede (pessoa_id, data_registro)
@@ -610,14 +611,14 @@ VALUES ('CLT'),
 INSERT INTO contrato_de_trabalho (cargo, tipo_contrato_de_trabalho_id, data_inicio, horas_mes, salario_mes, finalizado,
                                   funcionario_id)
 VALUES ('Recepcionista', 1, '2023-01-15', 180, 2500.00, FALSE, 1),
-       ('Gerente', 1, '2022-06-01', 200, 5000.00, FALSE, 2),
+       ('Gerente', 2, '2022-06-01', 200, 5000.00, FALSE, 2),
        ('Camareira', 1, '2023-03-01', 180, 2000.00, FALSE, 3),
        ('Cozinheiro', 1, '2022-12-15', 180, 3000.00, FALSE, 4),
        ('Garçom', 1, '2023-04-01', 180, 2200.00, FALSE, 5),
        ('Segurança', 1, '2023-02-01', 180, 2800.00, FALSE, 6),
        ('Manutenção', 1, '2023-05-01', 180, 2600.00, FALSE, 7),
-       ('Marketing', 1, '2022-08-01', 200, 4000.00, FALSE, 8),
-       ('Financeiro', 1, '2023-01-10', 200, 4500.00, FALSE, 9),
+       ('Marketing', 3, '2022-08-01', 200, 4000.00, FALSE, 8),
+       ('Financeiro', 2, '2023-01-10', 200, 4500.00, FALSE, 9),
        ('Limpeza', 1, '2023-03-20', 180, 1800.00, FALSE, 10);
 
 INSERT INTO condominio (hotel_id, nome)
@@ -657,15 +658,11 @@ VALUES ('2024-11-01', '2025-11-01', 5, 10000.00, 1, 1, 1),
        ('2024-11-04', '2025-11-04', 20, 9000.00, 4, 1, 3),
        ('2024-11-05', '2025-11-05', 25, 3000.00, 5, 2, 3);
 
-INSERT INTO espaco_de_evento (hotel_id)
-VALUES (1),
-       (1),
-       (2),
-       (2),
-       (3),
-       (3),
-       (4),
-       (4);
+INSERT INTO espaco_de_evento (tamanho_em_metros_total, hotel_id)
+VALUES (700, 1),
+       (500, 2),
+       (450, 3),
+       (600, 4);
 
 INSERT INTO tipo_de_uso (nome, descricao)
 VALUES ('Casamento', 'Eventos de celebração matrimonial'),
@@ -679,15 +676,15 @@ VALUES ('Casamento', 'Eventos de celebração matrimonial'),
        ('Show Musical', 'Apresentações musicais e culturais'),
        ('Palestra', 'Eventos educativos e informativos');
 
-INSERT INTO local_evento (tipo_de_espaco, tipo_de_uso_id, capacidade, espaco_evento_id)
-VALUES ('Salão Principal', 1, 200, 1),
-       ('Sala VIP', 2, 50, 2),
-       ('Auditório', 3, 300, 3),
-       ('Sala de Reunião', 4, 20, 4),
-       ('Espaço ao Ar Livre', 5, 150, 5),
-       ('Teatro', 7, 400, 6),
-       ('Palco Aberto', 9, 100, 7),
-       ('Sala de Palestra', 10, 120, 8);
+INSERT INTO local_evento (tipo_de_espaco, tipo_de_uso_id, tamanho_em_metros, capacidade, espaco_evento_id)
+VALUES ('Salão Principal', 1, 50, 200, 1),
+       ('Sala VIP', 2, 60, 50, 1),
+       ('Auditório', 3, 75, 300, 2),
+       ('Sala de Reunião', 4, 55, 20, 2),
+       ('Espaço ao Ar Livre', 5, 120, 150, 3),
+       ('Teatro', 7, 100, 400, 3),
+       ('Palco Aberto', 9, 80, 100, 4),
+       ('Sala de Palestra', 10, 70, 120, 4);
 
 INSERT INTO vale (tipo, descricao, valor, data_hora, percentual_de_desconto, tipo_contrato_beneficiario_id)
 VALUES ('Alimentação', 'Vale para compras em supermercados', 800.00, '2024-01-10 09:00:00', 3.00, 1),
@@ -740,11 +737,11 @@ VALUES ('2024-11-01', '2024-11-03', 1, 1),
        ('2024-11-10', '2024-11-12', 9, 3),
        ('2024-11-11', '2024-11-13', 10, 6);
 
-INSERT INTO estoque (capacidade, data_atualizacao, hotel_id)
-VALUES (2000, '2024-11-01 10:00:00', 1),
-       (2500, '2024-11-01 11:00:00', 2),
-       (1800, '2024-11-01 12:00:00', 3),
-       (2200, '2024-11-01 13:00:00', 4);
+INSERT INTO estoque (capacidade, data_atualizacao)
+VALUES (2000, '2024-11-01 10:00:00'),
+       (2500, '2024-11-01 11:00:00'),
+       (1800, '2024-11-01 12:00:00'),
+       (2200, '2024-11-01 13:00:00');
 
 INSERT INTO produto (nome, marca)
 VALUES ('Arroz', 'Marca A'),
@@ -788,11 +785,11 @@ VALUES ('Arroz', 'Marca A'),
        ('Salgadinhos', 'Marca AM'),
        ('Molho de tomate', 'Marca AN');
 
-INSERT INTO cozinha (nome, hotel_id, estoque_id)
-VALUES ('Cozinha Principal', 1, 1),
-       ('Cozinha Gourmet', 2, 2),
-       ('Cozinha Internacional', 3, 3),
-       ('Cozinha Local', 4, 4);
+INSERT INTO cozinha (nome, tamanho_em_metros, hotel_id, estoque_id)
+VALUES ('Cozinha Principal', 70, 1, 1),
+       ('Cozinha Gourmet', 50, 2, 2),
+       ('Cozinha Principal', 55, 3, 3),
+       ('Cozinha Local', 45, 4, 4);
 
 INSERT INTO estoque_produto (produto_id, estoque_id, quantidade)
 VALUES (1, 1, 50),
@@ -875,17 +872,9 @@ VALUES ('Entrega de almoço', '2024-11-18 10:00:00', 1, 1),
        ('Entrega de materiais de escritório', '2024-11-21 13:00:00', 8, 1),
        ('Entrega de frutas e legumes', '2024-11-22 07:00:00', 9, 4);
 
---- tabelas restantes: nota_fiscal, pagamento
 INSERT INTO plano_de_saude (nome, cnpj_fornecedor, valor_mensal, possui_coparticipacao, tipo_contrato_beneficiario_id)
-VALUES ('Amil Básico', '12.345.678/0001-99', 350.00, FALSE, 1),
-       ('Amil Premium', '12.345.678/0001-99', 650.00, TRUE, 1),
-       ('Bradesco Saúde Básico', '23.456.789/0001-88', 400.00, FALSE, 1),
-       ('Bradesco Saúde Premium', '23.456.789/0001-88', 750.00, TRUE, 1),
-       ('São Cristóvão Básico', '34.567.890/0001-77', 380.00, FALSE, 1),
-       ('São Cristóvão Premium', '34.567.890/0001-77', 700.00, TRUE, 1),
-       ('Sul América Básico', '45.678.901/0001-66', 370.00, FALSE, 1),
-       ('Sul América Premium', '45.678.901/0001-66', 720.00, TRUE, 1);
-
+VALUES ('Amil Básico', '12.345.678/0001-99', 350.00, FALSE, 2),
+       ('Amil Premium', '12.345.678/0001-99', 650.00, TRUE, 1);
 
 INSERT INTO pedido (descricao, valor, data_hora, reserva_acomodacao_id)
 VALUES ('Café da manhã', 30.00, '2024-11-01 07:30:00', 1),

@@ -19,6 +19,8 @@ public class LocalEvento {
   @ManyToOne
   @JoinColumn(name = "espaco_de_evento_id")
   private EspacoDeEvento espacoDeEvento;
+  @Column(name = "tamanho_em_metros")
+  private Integer tamanhoEmMetros;
   @ManyToMany
   @JoinTable(
     name = "local_evento_manutencao",

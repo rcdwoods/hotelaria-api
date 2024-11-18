@@ -13,7 +13,7 @@ public interface AcomodacaoRepository extends JpaRepository<Acomodacao, Long> {
     value = "SELECT * FROM acomodacao a WHERE " +
       "(a.numero, a.hotel_id) NOT IN " +
       "(SELECT r.numero_acomodacao,r.hotel_id FROM reserva_acomodacao r " +
-      "WHERE r.data_esperada_checkin > ?2 AND r.data_esperada_checkout < ?3" +
+      "WHERE r.data_esperada_checkin > ?2 AND r.data_esperada_checkin < ?3 OR r.data_esperada_checkout > ?2 AND r.data_esperada_checkout < ?3" +
       ") AND a.hotel_id = ?1",
     nativeQuery = true
   )

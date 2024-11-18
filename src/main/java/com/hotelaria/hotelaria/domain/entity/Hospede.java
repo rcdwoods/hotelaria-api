@@ -16,6 +16,6 @@ public class Hospede {
   @OneToOne
   @JoinColumn(name = "pessoa_id")
   private Pessoa pessoa;
-  @Column(name = "registrado_em")
-  private LocalDateTime registradoEm;
+  @Column(name = "data_registro")
+  private LocalDateTime dataRegistro;
 }
