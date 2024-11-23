@@ -1,0 +1,304 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Lorie API
+
+host: localhost:8080
+basePath: /
+tags:
+  - name: hoteis
+schemes:
+  - http
+  - https
+
+paths:
+  '/hoteis':
+    get:
+      tags:
+        - hoteis
+      summary: Listagem de hoteis
+      description: Lista todos hoteis cadastrados na rede de hotelaria
+      operationId: retrieveHotels
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/HotelResponse'
+
+    post:
+      tags:
+        - hoteis
+      summary: Create a new hotel
+      description: Create a new hotel
+      operationId: createHotel
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Hotel object that needs to be added
+          required: true
+          schema:
+            $ref: '#/definitions/HotelRequest'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/HotelResponse'
+
+definitions:
+  HotelRequest:
+    type: object
+    properties:
+      nome_fantasia:
+        type: string
+        example: 'New Star Hotel'
+      setor:
+        type: string
+        example: 'FAMILIA'
+        enum:
+          - 'FAMILIA'
+          - 'ADULTOS'
+          - 'PERMITE_PETS'
+      tamanho:
+        type: integer
+        format: int64
+      is_central:
+        type: boolean
+      categoria:
+        type: string
+        example: 'TRADICIONAL'
+        enum:
+          - 'TRADICIONAL'
+          - 'POUSADA'
+          - 'APART_HOTEL'
+          - 'CONDOMINIO_DE_HOTEIS'
+          - 'RESORT'
+      acomodacoes:
+        type: array
+        items:
+          $ref: '#/definitions/AcomodacaoRequest'
+      registro_imobiliario:
+        $ref: '#/definitions/RegistroImobiliarioRequest'
+    required:
+      - nome_fantasia
+      - setor
+      - tamanho
+      - is_central
+      - categoria
+      - acomodacoes
+      - registro_imobiliario
+
+  HotelResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      nome_fantasia:
+        type: string
+      setor:
+        type: string
+      tamanho:
+        type: integer
+        format: int64
+      is_central:
+        type: boolean
+      categoria:
+        type: string
+      acomodacoes:
+        type: array
+        items:
+          $ref: '#/definitions/AcomodacaoResponse'
+      registro_imobiliario:
+        $ref: '#/definitions/RegistroImobiliarioResponse'
+
+  RegistroImobiliarioRequest:
+    type: object
+    properties:
+      data_registro:
+        type: string
+        format: date
+      numero_registro_prefeitura:
+        type: string
+        example: 'NP123456'
+      georreferenciamento:
+        $ref: '#/definitions/GeorreferenciamentoRequest'
+    required:
+      - data_registro
+      - numero_registro_prefeitura
+      - georreferenciamento
+
+  RegistroImobiliarioResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      data_registro:
+        type: string
+      numero_registro_prefeitura:
+        type: string
+      georreferenciamento:
+        $ref: '#/definitions/GeorreferenciamentoResponse'
+
+  GeorreferenciamentoRequest:
+    type: object
+    properties:
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
+    required:
+      - latitude
+      - longitude
+
+  GeorreferenciamentoResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      latitude:
+        type: string
+      longitude:
+        type: string
+
+  PoliticaDeUsoRequest:
+    type: object
+    properties:
+      nome:
+        type: string
+      descricao:
+        type: string
+    required:
+      - nome
+      - descricao
+
+  PoliticaDeUsoResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      nome:
+        type: string
+      descricao:
+        type: string
+
+  AcomodacaoRequest:
+    type: object
+    properties:
+      numero:
+        type: integer
+        format: int64
+      valor_diaria:
+        type: number
+        format: double
+      tipo:
+        type: string
+        example: 'STANDARD'
+        enum:
+          - 'STANDARD'
+          - 'STANDARD_COM_VISTA'
+          - 'DELUXE'
+          - 'DELUXE_COM_VISTA'
+          - 'SUITE'
+          - 'SUITE_COM_VISTA'
+          - 'EXECUTIVE'
+          - 'EXECUTIVE_COM_VISTA'
+          - 'PRESIDENTIAL_SUITE'
+          - 'ROYAL_SUITE'
+      capacidade:
+        type: integer
+        format: int32
+      politicas_de_uso:
+        type: array
+        items:
+          type: integer
+          format: int64
+
+  AcomodacaoResponse:
+    type: object
+    properties:
+      numero:
+        type: integer
+        format: int64
+      valor_diaria:
+        type: number
+        format: double
+      tipo:
+        type: string
+      capacidade:
+        type: integer
+        format: int32
+      politicas_de_uso:
+        type: array
+        items:
+          $ref: '#/definitions/PoliticaDeUsoResponse'
+
+  ReservaAcomodacaoResponse:
+    type: object
+    properties:
+      acomodacao:
+        $ref: '#/definitions/AcomodacaoRequest'
+      data_esperada_checkin:
+        type: string
+      data_esperada_checkout:
+        type: string
+      data_checkin:
+        type: string
+      data_checkout:
+        type: string
+      valor_total:
+        type: number
+        format: double
+    required:
+      - acomodacao
+      - data_esperada_check_in
+      - data_esperada_check_out
+      - data_checkin
+      - data_checkout
+      - valor_total
+
+  SolicitacaoReservaRequest:
+    type: object
+    properties:
+      hospede_id:
+        type: integer
+        format: int64
+      numero_acomodacao:
+        type: integer
+        format: int64
+      hotel_id:
+        type: integer
+        format: int64
+      data_checkin:
+        type: string
+      data_checkout:
+        type: string
+    required:
+      - hospede_id
+      - numero_acomodacao
+      - hotel_id
+      - data_esperada_check_in
+      - data_esperada_check_out
+      
+  DisponibilidadeResponse:
+    type: object
+    properties:
+      data:
+        type: string
+      quantidade_disponivel:
+        type: integer
+        format: int32
+      acomodacoes_disponiveis:
+        type: array
+        items:
+          $ref: '#/definitions/AcomodacaoResponse'
