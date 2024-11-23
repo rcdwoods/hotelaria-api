@@ -62,7 +62,7 @@ CREATE TABLE acomodacao
     PRIMARY KEY (numero, hotel_id),
     FOREIGN KEY (hotel_id) REFERENCES hotel (id)
 );
-
+--- acredito que devemos mudar essa tabela que tipo e numero sejam unique
 CREATE TABLE documento_identificacao
 (
     id     BIGINT AUTO_INCREMENT NOT NULL,

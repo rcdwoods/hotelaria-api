@@ -1,14 +1,15 @@
 package com.hotelaria.hotelaria.infra.resource;
 
-import com.hotelaria.hotelaria.domain.entity.Acomodacao;
 import com.hotelaria.hotelaria.domain.entity.Hospede;
 import com.hotelaria.hotelaria.domain.entity.ReservaAcomodacao;
 import com.hotelaria.hotelaria.domain.service.HospedeService;
 import com.hotelaria.hotelaria.domain.service.ReservaAcomodacaoService;
 import com.hotelaria.hotelaria.infra.mapper.ReservaAcomodacaoMapper;
-import com.hotelaria.hotelaria.infra.resource.dto.ReservaAcomodacaoResponse;
-import com.hotelaria.hotelaria.infra.resource.dto.SolicitacaoReserva;
-import jakarta.validation.Valid;
+
+import javax.validation.Valid;
+
+import io.swagger.model.ReservaAcomodacaoResponse;
+import io.swagger.model.SolicitacaoReservaRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class HospedeResource {
   }
 
   @PostMapping("/{id}/reservas")
-  public ResponseEntity<ReservaAcomodacaoResponse> makeReserva(@RequestBody @Valid SolicitacaoReserva solicitacaoReserva) {
+  public ResponseEntity<ReservaAcomodacaoResponse> makeReserva(@RequestBody @Valid SolicitacaoReservaRequest solicitacaoReserva) {
     ReservaAcomodacao reservaAcomodacao = reservaAcomodacaoService.makeReservation(solicitacaoReserva);
     ReservaAcomodacaoResponse response = reservaAcomodacaoMapper.toResponse(reservaAcomodacao);
     return ResponseEntity.ok(response);

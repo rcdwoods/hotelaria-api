@@ -2,9 +2,11 @@ package com.hotelaria.hotelaria.domain.service;
 
 import com.hotelaria.hotelaria.domain.entity.Acomodacao;
 import com.hotelaria.hotelaria.domain.repository.AcomodacaoRepository;
+import io.swagger.model.AcomodacaoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,6 +30,17 @@ public class AcomodacaoService {
 
   public Optional<Acomodacao> retrieveByHotelAndNumber(Long hotelId, Long number) {
     return acomodacaoRepository.retrieveByHotelIdAndNumber(hotelId, number);
+  }
+
+  public Acomodacao create(AcomodacaoRequest acomodacao, Long hotelId) {
+    acomodacaoRepository.insert(
+      acomodacao.getNumero(),
+      hotelId,
+      BigDecimal.valueOf(acomodacao.getValorDiaria()),
+      acomodacao.getTipo().toString(),
+      acomodacao.getCapacidade()
+    );
+    return acomodacaoRepository.retrieveByHotelIdAndNumber(hotelId, acomodacao.getNumero()).get();
   }
 
   private Set<LocalDate> extractInterval(LocalDate from, LocalDate to) {

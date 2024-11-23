@@ -22,4 +22,15 @@ public interface ReservaAcomodacaoRepository extends JpaRepository<ReservaAcomod
 
   @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
   Long getLastInsertId();
+
+  @Query(value = "DELETE FROM reserva_acomodacao WHERE numero_acomodacao = ?1 AND hotel_id = ?2", nativeQuery = true)
+  void delete(Long numeroAcomodacao, Long hotelId);
+
+  @Modifying
+  @Transactional
+  @Query(
+    value = "UPDATE reserva_acomodacao SET data_esperada_checkin = ?1, data_esperada_checkout = ?2 WHERE numero_acomodacao = ?3 AND hotel_id = ?4",
+    nativeQuery = true
+  )
+  void update(Long numeroAcomodacao, Long hotelId, LocalDateTime dataCheckin, LocalDateTime dataCheckout);
 }

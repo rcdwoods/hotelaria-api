@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import com.hotelaria.hotelaria.domain.exception.BusinessException;
 import com.hotelaria.hotelaria.domain.exception.EntityNotFoundException;
 import com.hotelaria.hotelaria.domain.exception.ValidationException;
-import jakarta.validation.UnexpectedTypeException;
+import javax.validation.UnexpectedTypeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;

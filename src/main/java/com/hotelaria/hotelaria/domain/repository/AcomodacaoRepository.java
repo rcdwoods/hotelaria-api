@@ -1,9 +1,13 @@
 package com.hotelaria.hotelaria.domain.repository;
 
 import com.hotelaria.hotelaria.domain.entity.Acomodacao;
+import com.hotelaria.hotelaria.domain.entity.PoliticaDeUso;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,9 +22,26 @@ public interface AcomodacaoRepository extends JpaRepository<Acomodacao, Long> {
     nativeQuery = true
   )
   List<Acomodacao> retrieveAllAvailableBetween(Long hotelId, LocalDateTime from, LocalDateTime to);
+
   @Query(
     value = "SELECT * FROM acomodacao a WHERE a.hotel_id = ?1 AND a.numero = ?2",
     nativeQuery = true
   )
   Optional<Acomodacao> retrieveByHotelIdAndNumber(Long hotelId, Long number);
+
+  @Modifying
+  @Transactional
+  @Query(
+    value = "INSERT INTO acomodacao (numero, hotel_id, valor_diaria, tipo, capacidade) VALUES (?1, ?2, ?3, ?4, ?5)",
+    nativeQuery = true
+  )
+  void insert(Long numero, Long hotelId, BigDecimal valorDiaria, String tipo, Integer capacidade);
+
+  @Modifying
+  @Transactional
+  @Query(
+    value = "DELETE FROM acomodacao WHERE numero = ?1 AND hotel_id = ?2",
+    nativeQuery = true
+  )
+  void deleteByNumeroAndHotelId(Long numero, Long hotelId);
 }

@@ -6,7 +6,7 @@ import com.hotelaria.hotelaria.domain.entity.ReservaAcomodacao;
 import com.hotelaria.hotelaria.domain.exception.AcomodacaoNotFoundException;
 import com.hotelaria.hotelaria.domain.exception.HospedeNotFoundException;
 import com.hotelaria.hotelaria.domain.repository.ReservaAcomodacaoRepository;
-import com.hotelaria.hotelaria.infra.resource.dto.SolicitacaoReserva;
+import io.swagger.model.SolicitacaoReservaRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class ReservaAcomodacaoService {
     return reservaAcomodacaoRepository.retrieveByHospedeId(hospedeId);
   }
 
-  public ReservaAcomodacao makeReservation(SolicitacaoReserva solicitacaoReserva) {
+  public ReservaAcomodacao makeReservation(SolicitacaoReservaRequest solicitacaoReserva) {
     Optional<Acomodacao> acomodacao = acomodacaoService.retrieveByHotelAndNumber(solicitacaoReserva.getHotelId(), solicitacaoReserva.getNumeroAcomodacao());
     if (acomodacao.isEmpty()) {
       throw new AcomodacaoNotFoundException(solicitacaoReserva.getNumeroAcomodacao());
@@ -40,8 +40,8 @@ public class ReservaAcomodacaoService {
     ReservaAcomodacao reserva = new ReservaAcomodacao();
     reserva.setAcomodacao(acomodacao.get());
     reserva.setHospede(hospede.get());
-    reserva.setDataEsperadaCheckIn(solicitacaoReserva.getDataCheckin());
-    reserva.setDataEsperadaCheckOut(solicitacaoReserva.getDataCheckout());
+    reserva.setDataEsperadaCheckin(LocalDateTime.parse(solicitacaoReserva.getDataCheckin()));
+    reserva.setDataEsperadaCheckout(LocalDateTime.parse(solicitacaoReserva.getDataCheckout()));
 
     return insert(reserva);
   }
@@ -50,8 +50,8 @@ public class ReservaAcomodacaoService {
     Long numeroAcomodacao = reserva.getAcomodacao().getAcomodacaoId().getNumero();
     Long hotelId = reserva.getAcomodacao().getAcomodacaoId().getHotel().getId();
     Long hospedeId = reserva.getHospede().getId();
-    LocalDateTime dataCheckin = reserva.getDataEsperadaCheckIn();
-    LocalDateTime dataCheckout = reserva.getDataEsperadaCheckOut();
+    LocalDateTime dataCheckin = reserva.getDataEsperadaCheckin();
+    LocalDateTime dataCheckout = reserva.getDataEsperadaCheckout();
     reservaAcomodacaoRepository.insert(numeroAcomodacao, hotelId, hospedeId, dataCheckin, dataCheckout);
     reserva.setId(reservaAcomodacaoRepository.getLastInsertId());
 

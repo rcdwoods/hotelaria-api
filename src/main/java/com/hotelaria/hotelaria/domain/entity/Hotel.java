@@ -1,9 +1,10 @@
 package com.hotelaria.hotelaria.domain.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,12 +20,16 @@ public class Hotel {
   private SetorEnum setor;
   private Long tamanho;
   @Column(name = "is_central")
-  private boolean isCentral;
+  private Boolean isCentral;
   @Enumerated(EnumType.STRING)
   private CategoriaEnum categoria;
   @OneToOne
   @JoinColumn(name = "registro_imobiliario_id")
   private RegistroImobiliario registroImobiliario;
   @OneToMany(mappedBy = "acomodacaoId.hotel", fetch = FetchType.LAZY)
-  private List<Acomodacao> acomodacoes;
+  private List<Acomodacao> acomodacoes = new ArrayList<>();
+
+  public void addAcomodacao(Acomodacao acomodacao) {
+    acomodacoes.add(acomodacao);
+  }
 }

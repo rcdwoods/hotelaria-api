@@ -1,6 +1,6 @@
 package com.hotelaria.hotelaria.domain.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 public class Cozinha {

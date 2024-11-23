@@ -1,6 +1,6 @@
 package com.hotelaria.hotelaria.domain.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,13 +24,13 @@ public class ReservaAcomodacao {
   })
   private Acomodacao acomodacao;
   @Column(name = "data_esperada_checkin")
-  private LocalDateTime dataEsperadaCheckIn;
+  private LocalDateTime dataEsperadaCheckin;
   @Column(name = "data_esperada_checkout")
-  private LocalDateTime dataEsperadaCheckOut;
+  private LocalDateTime dataEsperadaCheckout;
   @Column(name = "data_checkin")
-  private LocalDateTime dataCheckIn;
+  private LocalDateTime dataCheckin;
   @Column(name = "data_checkout")
-  private LocalDateTime dataCheckOut;
+  private LocalDateTime dataCheckout;
   @OneToMany(mappedBy = "reservaAcomodacao")
   private List<Entrega> entregas;
   @OneToMany(mappedBy = "reservaAcomodacao")
