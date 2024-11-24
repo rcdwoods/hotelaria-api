@@ -1,15 +1,15 @@
 package com.hotelaria.hotelaria.domain.service;
 
 import com.hotelaria.hotelaria.domain.entity.Georreferenciamento;
-import com.hotelaria.hotelaria.domain.entity.Hotel;
 import com.hotelaria.hotelaria.domain.entity.RegistroImobiliario;
-import com.hotelaria.hotelaria.domain.repository.HotelRepository;
+import com.hotelaria.hotelaria.domain.exception.RegistroImobiliarioNotFoundException;
 import com.hotelaria.hotelaria.domain.repository.RegistroImobiliarioRepository;
 import io.swagger.model.RegistroImobiliarioRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,5 +27,18 @@ public class RegistroImobiliarioService {
     );
 
     return registroImobiliarioRepository.retrieveLastCreated();
+  }
+
+  @Transactional
+  public void removeById(Long id) {
+    Optional<RegistroImobiliario> registroImobiliario = registroImobiliarioRepository.retrieveById(id);
+    if (registroImobiliario.isEmpty()) {
+      throw new RegistroImobiliarioNotFoundException(id);
+    }
+
+    RegistroImobiliario registroImobiliarioEncontrado = registroImobiliario.get();
+
+    registroImobiliarioRepository.deleteRegistroById(id);
+    georreferenciamentoService.removeById(registroImobiliarioEncontrado.getGeorreferenciamento().getId());
   }
 }

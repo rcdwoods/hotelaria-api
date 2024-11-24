@@ -43,6 +43,10 @@ public class AcomodacaoService {
     return acomodacaoRepository.retrieveByHotelIdAndNumber(hotelId, acomodacao.getNumero()).get();
   }
 
+  public void removeAllByHotelId(Long hotelId) {
+    acomodacaoRepository.deleteAllByHotelId(hotelId);
+  }
+
   private Set<LocalDate> extractInterval(LocalDate from, LocalDate to) {
     Set<LocalDate> dates = new HashSet<>();
     dates.add(from);

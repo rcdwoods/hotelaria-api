@@ -36,7 +36,7 @@ public interface RegistroImobiliarioRepository extends JpaRepository<RegistroImo
     value = "DELETE FROM registro_imobiliario WHERE id = ?1",
     nativeQuery = true
   )
-  void deleteByNumeroAndHotelId(Long hotelId);
+  void deleteRegistroById(Long id);
 
   @Query(value = "SELECT * FROM registro_imobiliario WHERE id = LAST_INSERT_ID()", nativeQuery = true)
   RegistroImobiliario retrieveLastCreated();

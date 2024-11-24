@@ -37,7 +37,7 @@ public interface GeorreferenciamentoRepository extends JpaRepository<Georreferen
     value = "DELETE FROM georreferenciamento WHERE id = ?1",
     nativeQuery = true
   )
-  void deleteById(Long id);
+  void deleteGeorreferenciamentoById(long id);
 
   @Query(value = "SELECT * FROM georreferenciamento WHERE id = LAST_INSERT_ID()", nativeQuery = true)
   Georreferenciamento retrieveLastCreated();

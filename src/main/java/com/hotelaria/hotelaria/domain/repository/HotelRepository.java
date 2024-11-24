@@ -8,10 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
   @Query(value = "SELECT * FROM hotel", nativeQuery = true)
   List<Hotel> retrieveAll();
+
+  @Query(value = "SELECT * FROM hotel WHERE id = ?1", nativeQuery = true)
+  Optional<Hotel> retrieveById(long id);
+
+  @Query(value = "EXISTS(SELECT 1 FROM hotel WHERE id = ?1)", nativeQuery = true)
+  boolean existsById(long id);
 
   @Modifying
   @Transactional
@@ -24,10 +31,10 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
   @Modifying
   @Transactional
   @Query(
-    value = "UPDATE hotel SET nome_fantasia = ?2, setor = ?3, tamanho = ?4, is_central = ?5 WHERE id = ?1",
+    value = "UPDATE hotel SET nome_fantasia = ?2, setor = ?3, tamanho = ?4, is_central = ?5, categoria = ?6 WHERE id = ?1",
     nativeQuery = true
   )
-  void update(Long hotelId, String nomeFantasia, String setor, Long tamanho, Boolean isCentral);
+  void update(Long hotelId, String nomeFantasia, String setor, Long tamanho, Boolean isCentral, String categoria);
 
   @Modifying
   @Transactional

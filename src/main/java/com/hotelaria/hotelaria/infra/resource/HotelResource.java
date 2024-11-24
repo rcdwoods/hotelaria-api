@@ -10,6 +10,7 @@ import io.swagger.api.HoteisApi;
 import io.swagger.model.DisponibilidadeResponse;
 import io.swagger.model.HotelRequest;
 import io.swagger.model.HotelResponse;
+import io.swagger.model.UpdateHotelRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,27 @@ public class HotelResource implements HoteisApi {
   public ResponseEntity<HotelResponse> createHotel(@RequestBody HotelRequest hotelRequest) {
     Hotel createdHotel = hotelService.create(hotelRequest);
     return ResponseEntity.ok(hotelMapper.toResponse(createdHotel));
+  }
+
+  @Override
+  @PutMapping("/{hotelId}")
+  public ResponseEntity<HotelResponse> updateHotel(@PathVariable Long hotelId, @RequestBody UpdateHotelRequest body) {
+    Hotel updatedHotel = hotelService.update(hotelId, body);
+    return ResponseEntity.ok(hotelMapper.toResponse(updatedHotel));
+  }
+
+  @Override
+  @DeleteMapping("/{hotelId}")
+  public ResponseEntity<Void> removeHotel(@PathVariable Long hotelId) {
+    hotelService.remove(hotelId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  @GetMapping("/{hotelId}")
+  public ResponseEntity<HotelResponse> retrieveHotelById(@PathVariable Long hotelId) {
+    Hotel hotelEncontrado = hotelService.retrieveById(hotelId);
+    return ResponseEntity.ok(hotelMapper.toResponse(hotelEncontrado));
   }
 
   @Override

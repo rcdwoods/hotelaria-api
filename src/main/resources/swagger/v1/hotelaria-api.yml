@@ -50,6 +50,81 @@ paths:
           schema:
             $ref: '#/definitions/HotelResponse'
 
+  '/hoteis/{hotelId}':
+    get:
+      tags:
+        - hoteis
+      summary: Retorna um hotel
+      description: Retorna um hotel com o ID informado
+      operationId: retrieveHotelById
+      produces:
+        - application/json
+      parameters:
+        - name: hotelId
+          in: path
+          description: ID of hotel to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/HotelResponse'
+        '404':
+          description: Not Found
+
+    put:
+      tags:
+        - hoteis
+      summary: Update an existing hotel
+      description: Update an existing hotel
+      operationId: updateHotel
+      produces:
+        - application/json
+      parameters:
+        - name: hotelId
+          in: path
+          description: ID of hotel to return
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          description: Hotel object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateHotelRequest'
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/HotelResponse'
+        '404':
+          description: Not Found
+
+    delete:
+      tags:
+        - hoteis
+      summary: Remove um hotel
+      description: Remove um hotel com o ID informado
+      operationId: removeHotel
+      produces:
+        - application/json
+      parameters:
+        - name: hotelId
+          in: path
+          description: ID of hotel to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+
+
 definitions:
   HotelRequest:
     type: object
@@ -92,6 +167,34 @@ definitions:
       - categoria
       - acomodacoes
       - registro_imobiliario
+
+  UpdateHotelRequest:
+    type: object
+    properties:
+      nome_fantasia:
+        type: string
+        example: 'New Star Hotel'
+      setor:
+        type: string
+        example: 'FAMILIA'
+        enum:
+          - 'FAMILIA'
+          - 'ADULTOS'
+          - 'PERMITE_PETS'
+      tamanho:
+        type: integer
+        format: int64
+      is_central:
+        type: boolean
+      categoria:
+        type: string
+        example: 'TRADICIONAL'
+        enum:
+          - 'TRADICIONAL'
+          - 'POUSADA'
+          - 'APART_HOTEL'
+          - 'CONDOMINIO_DE_HOTEIS'
+          - 'RESORT'
 
   HotelResponse:
     type: object

@@ -44,4 +44,9 @@ public interface AcomodacaoRepository extends JpaRepository<Acomodacao, Long> {
     nativeQuery = true
   )
   void deleteByNumeroAndHotelId(Long numero, Long hotelId);
+
+  @Modifying
+  @Transactional
+  @Query(value = "DELETE FROM acomodacao WHERE hotel_id = ?1", nativeQuery = true)
+  void deleteAllByHotelId(Long hotelId);
 }

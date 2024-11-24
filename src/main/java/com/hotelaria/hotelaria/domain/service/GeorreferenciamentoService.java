@@ -1,9 +1,7 @@
 package com.hotelaria.hotelaria.domain.service;
 
 import com.hotelaria.hotelaria.domain.entity.Georreferenciamento;
-import com.hotelaria.hotelaria.domain.entity.RegistroImobiliario;
 import com.hotelaria.hotelaria.domain.repository.GeorreferenciamentoRepository;
-import com.hotelaria.hotelaria.domain.repository.RegistroImobiliarioRepository;
 import io.swagger.model.GeorreferenciamentoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,5 +20,9 @@ public class GeorreferenciamentoService {
     );
 
     return georreferenciamentoRepository.retrieveLastCreated();
+  }
+
+  public void removeById(Long id) {
+    georreferenciamentoRepository.deleteGeorreferenciamentoById(id);
   }
 }
