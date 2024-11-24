@@ -1,7 +1,6 @@
 package com.hotelaria.hotelaria.domain.repository;
 
 import com.hotelaria.hotelaria.domain.entity.Hotel;
-import com.hotelaria.hotelaria.domain.entity.PoliticaDeUso;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +13,10 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
   @Query(value = "SELECT * FROM hotel", nativeQuery = true)
   List<Hotel> retrieveAll();
 
-  @Query(value = "SELECT * FROM hotel WHERE id = ?1", nativeQuery = true)
+  @Query(
+    value = "SELECT * FROM hotel WHERE id = ?1",
+    nativeQuery = true
+  )
   Optional<Hotel> retrieveById(long id);
 
   @Query(value = "EXISTS(SELECT 1 FROM hotel WHERE id = ?1)", nativeQuery = true)

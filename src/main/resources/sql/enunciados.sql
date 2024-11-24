@@ -74,4 +74,3 @@ FROM hotel h
          JOIN sala_condominio sc ON c.id = sc.condominio_id
          JOIN contrato_aluguel ca ON sc.numero = ca.numero_sala_condominio AND c.id = ca.condominio_id
          JOIN empresa e ON ca.empresa_id = e.id;
-

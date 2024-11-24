@@ -1,7 +1,6 @@
 package com.hotelaria.hotelaria.domain.repository;
 
 import com.hotelaria.hotelaria.domain.entity.Acomodacao;
-import com.hotelaria.hotelaria.domain.entity.PoliticaDeUso;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,11 +22,14 @@ public interface AcomodacaoRepository extends JpaRepository<Acomodacao, Long> {
   )
   List<Acomodacao> retrieveAllAvailableBetween(Long hotelId, LocalDateTime from, LocalDateTime to);
 
+  @Query(value = "SELECT * FROM acomodacao a WHERE a.hotel_id = ?1", nativeQuery = true)
+  List<Acomodacao> retrieveAllByHotelId(Long hotelId);
+
   @Query(
-    value = "SELECT * FROM acomodacao a WHERE a.hotel_id = ?1 AND a.numero = ?2",
+    value = "SELECT * FROM acomodacao a WHERE a.numero = ?1 AND a.hotel_id = ?2",
     nativeQuery = true
   )
-  Optional<Acomodacao> retrieveByHotelIdAndNumber(Long hotelId, Long number);
+  Optional<Acomodacao> retrieveByNumeroAndHotel(Long numero, Long hotelId);
 
   @Modifying
   @Transactional
@@ -49,4 +51,12 @@ public interface AcomodacaoRepository extends JpaRepository<Acomodacao, Long> {
   @Transactional
   @Query(value = "DELETE FROM acomodacao WHERE hotel_id = ?1", nativeQuery = true)
   void deleteAllByHotelId(Long hotelId);
+
+  @Modifying
+  @Transactional
+  @Query(
+    value = "INSERT INTO acomodacao_politica_de_uso (numero_acomodacao, hotel_id, politica_de_uso_id) VALUES (?1, ?2, ?3)",
+    nativeQuery = true
+  )
+  void attachPoliticaDeUsoToAcomodacao(Long numeroAcomodacao, Long hotelId, Long politicaDeUsoId);
 }

@@ -1,10 +1,13 @@
 package com.hotelaria.hotelaria.domain.service;
 
 import com.hotelaria.hotelaria.domain.entity.Acomodacao;
+import com.hotelaria.hotelaria.domain.entity.PoliticaDeUso;
+import com.hotelaria.hotelaria.domain.exception.AcomodacaoNotFoundException;
 import com.hotelaria.hotelaria.domain.repository.AcomodacaoRepository;
 import io.swagger.model.AcomodacaoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,23 +19,45 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AcomodacaoService {
   private final AcomodacaoRepository acomodacaoRepository;
+  private final PoliticaDeUsoService politicaDeUsoService;
 
-  public Map<LocalDate, List<Acomodacao>> retrieveAvailableFromHotelBetween(Long hotelId, LocalDate from, LocalDate to) {
+  public Map<LocalDate, List<Acomodacao>> retrieveAvailabilityFromHotelBetween(Long hotelId, LocalDate from, LocalDate to) {
     Set<LocalDate> dateInterval = extractInterval(from, to);
 
-    return dateInterval.stream().map(date -> {
-      LocalDateTime dateFrom = date.atStartOfDay();
-      LocalDateTime dateTo = date.atTime(23, 59, 59);
-
-      return Map.entry(date, acomodacaoRepository.retrieveAllAvailableBetween(hotelId, dateFrom, dateTo));
-    }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    return dateInterval.stream()
+      .map(date -> Map.entry(date, retrieveAvailableBetweenFromHotel(hotelId, from, to)))
+      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
-  public Optional<Acomodacao> retrieveByHotelAndNumber(Long hotelId, Long number) {
-    return acomodacaoRepository.retrieveByHotelIdAndNumber(hotelId, number);
+  private List<Acomodacao> retrieveAvailableBetweenFromHotel(Long hotelId, LocalDate from, LocalDate to) {
+    LocalDateTime dateFrom = from.atStartOfDay();
+    LocalDateTime dateTo = to.atTime(23, 59, 59);
+
+    return acomodacaoRepository.retrieveAllAvailableBetween(hotelId, dateFrom, dateTo).stream()
+      .peek(acomodacao -> {
+        List<PoliticaDeUso> politicasDeUso = politicaDeUsoService.retrieveAllByAcomodacaoFromHotel(acomodacao.getAcomodacaoId().getNumero(), hotelId);
+        acomodacao.setPoliticasDeUso(politicasDeUso);
+      }).collect(Collectors.toList());
   }
 
-  public Acomodacao create(AcomodacaoRequest acomodacao, Long hotelId) {
+  public Acomodacao retrieveByNumeroAndHotelId(Long numero, Long hotelId) {
+    Acomodacao acomodacaoFound = acomodacaoRepository.retrieveByNumeroAndHotel(numero, hotelId)
+      .orElseThrow(() -> new AcomodacaoNotFoundException(numero));
+
+    acomodacaoFound.setPoliticasDeUso(politicaDeUsoService.retrieveAllByAcomodacaoFromHotel(acomodacaoFound.getAcomodacaoId().getNumero(), hotelId));
+
+    return acomodacaoFound;
+  }
+
+  public List<Acomodacao> retrieveAllByHotel(Long hotelId) {
+    return acomodacaoRepository.retrieveAllByHotelId(hotelId).stream().map(acomodacao -> {
+      acomodacao.setPoliticasDeUso(politicaDeUsoService.retrieveAllByAcomodacaoFromHotel(acomodacao.getAcomodacaoId().getNumero(), hotelId));
+      return acomodacao;
+    }).collect(Collectors.toList());
+  }
+
+  @Transactional
+  public void create(AcomodacaoRequest acomodacao, Long hotelId) {
     acomodacaoRepository.insert(
       acomodacao.getNumero(),
       hotelId,
@@ -40,10 +65,23 @@ public class AcomodacaoService {
       acomodacao.getTipo().toString(),
       acomodacao.getCapacidade()
     );
-    return acomodacaoRepository.retrieveByHotelIdAndNumber(hotelId, acomodacao.getNumero()).get();
+
+    attachPoliticasDeUso(acomodacao.getNumero(), hotelId, acomodacao.getPoliticasDeUso());
   }
 
-  public void removeAllByHotelId(Long hotelId) {
+  private void attachPoliticasDeUso(Long numeroAcomodacao, Long hotelId, List<Long> politicasDeUso) {
+    politicasDeUso.forEach(politicaDeUso -> {
+      if (!politicaDeUsoService.existsById(politicaDeUso)) {
+        throw new IllegalArgumentException("Politica de uso não existe");
+      }
+
+      acomodacaoRepository.attachPoliticaDeUsoToAcomodacao(numeroAcomodacao, hotelId, politicaDeUso);
+    });
+  }
+
+  @Transactional
+  public void removeAllFromHotel(Long hotelId) {
+    politicaDeUsoService.removeAllFromHotel(hotelId);
     acomodacaoRepository.deleteAllByHotelId(hotelId);
   }
 

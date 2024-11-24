@@ -3,12 +3,12 @@ package com.hotelaria.hotelaria.domain.service;
 import com.hotelaria.hotelaria.domain.entity.Acomodacao;
 import com.hotelaria.hotelaria.domain.entity.Hospede;
 import com.hotelaria.hotelaria.domain.entity.ReservaAcomodacao;
-import com.hotelaria.hotelaria.domain.exception.AcomodacaoNotFoundException;
 import com.hotelaria.hotelaria.domain.exception.HospedeNotFoundException;
-import com.hotelaria.hotelaria.domain.repository.ReservaAcomodacaoRepository;
+import com.hotelaria.hotelaria.domain.repository.*;
 import io.swagger.model.SolicitacaoReservaRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,31 +19,45 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReservaAcomodacaoService {
   private final AcomodacaoService acomodacaoService;
-  private final HospedeService hospedeService;
+  private final PedidoRepository pedidoRepository;
+  private final HospedeRepository hospedeRepository;
+  private final EntregaRepository entregaRepository;
   private final ReservaAcomodacaoRepository reservaAcomodacaoRepository;
+  private final ReservaEstacionamentoRepository reservaEstacionamentoRepository;
+  private final AcomodacaoManutencaoRepository acomodacaoManutencaoRepository;
 
   public List<ReservaAcomodacao> retrieveReservasFromHospede(Long hospedeId) {
     return reservaAcomodacaoRepository.retrieveByHospedeId(hospedeId);
   }
 
   public ReservaAcomodacao makeReservation(SolicitacaoReservaRequest solicitacaoReserva) {
-    Optional<Acomodacao> acomodacao = acomodacaoService.retrieveByHotelAndNumber(solicitacaoReserva.getHotelId(), solicitacaoReserva.getNumeroAcomodacao());
-    if (acomodacao.isEmpty()) {
-      throw new AcomodacaoNotFoundException(solicitacaoReserva.getNumeroAcomodacao());
-    }
+    Acomodacao acomodacao = acomodacaoService.retrieveByNumeroAndHotelId(solicitacaoReserva.getNumeroAcomodacao(), solicitacaoReserva.getHotelId());
 
-    Optional<Hospede> hospede = hospedeService.retrieveById(solicitacaoReserva.getHospedeId());
+    Optional<Hospede> hospede = hospedeRepository.retrieveById(solicitacaoReserva.getHospedeId());
     if (hospede.isEmpty()) {
       throw new HospedeNotFoundException(solicitacaoReserva.getHospedeId());
     }
 
     ReservaAcomodacao reserva = new ReservaAcomodacao();
-    reserva.setAcomodacao(acomodacao.get());
+    reserva.setAcomodacao(acomodacao);
     reserva.setHospede(hospede.get());
     reserva.setDataEsperadaCheckin(LocalDateTime.parse(solicitacaoReserva.getDataCheckin()));
     reserva.setDataEsperadaCheckout(LocalDateTime.parse(solicitacaoReserva.getDataCheckout()));
 
     return insert(reserva);
+  }
+
+  public void removeAllFromHospede(Long hospedeId) {
+    reservaAcomodacaoRepository.removeAllFromHospede(hospedeId);
+  }
+
+  @Transactional
+  public void removeAllFromHotel(Long hotelId) {
+    acomodacaoManutencaoRepository.removeAllFromHotel(hotelId);
+    reservaEstacionamentoRepository.removeAllFromHotel(hotelId);
+    pedidoRepository.removeAllFromHotel(hotelId);
+    entregaRepository.removeAllFromHotel(hotelId);
+    reservaAcomodacaoRepository.removeAllFromHotel(hotelId);
   }
 
   private ReservaAcomodacao insert(ReservaAcomodacao reserva) {

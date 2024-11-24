@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -18,4 +19,11 @@ public class Hospede {
   private Pessoa pessoa;
   @Column(name = "data_registro")
   private LocalDateTime dataRegistro;
+  @OneToMany
+  @JoinTable(
+    name = "hospede_requisicao",
+    joinColumns = @JoinColumn(name = "hospede_id"),
+    inverseJoinColumns = @JoinColumn(name = "requisicao_id")
+  )
+  private List<Requisicao> requisicoes;
 }

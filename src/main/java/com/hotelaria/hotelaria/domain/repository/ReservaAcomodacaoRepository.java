@@ -28,6 +28,15 @@ public interface ReservaAcomodacaoRepository extends JpaRepository<ReservaAcomod
 
   @Modifying
   @Transactional
+  @Query(value = "DELETE FROM reserva_acomodacao WHERE hospede_id = ?1", nativeQuery = true)
+  void removeAllFromHospede(Long hospedeId);
+
+  @Modifying
+  @Query(value = "DELETE FROM reserva_acomodacao WHERE hotel_id = ?1", nativeQuery = true)
+  void removeAllFromHotel(Long hotelId);
+
+  @Modifying
+  @Transactional
   @Query(
     value = "UPDATE reserva_acomodacao SET data_esperada_checkin = ?1, data_esperada_checkout = ?2 WHERE numero_acomodacao = ?3 AND hotel_id = ?4",
     nativeQuery = true

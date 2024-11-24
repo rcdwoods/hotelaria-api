@@ -12,13 +12,6 @@ public class Condominio {
   @OneToOne
   @JoinColumn(name = "hotel_id")
   private Hotel hotel;
-  @ManyToMany
-  @JoinTable(
-    name = "condominio_contrato_de_aluguel",
-    joinColumns = @JoinColumn(name = "condominio_id"),
-    inverseJoinColumns = @JoinColumn(name = "contrato_de_aluguel_id")
-  )
-  private List<ContratoAluguel> contratosDeAluguel;
   @OneToMany(mappedBy = "id.condominio")
   private List<SalaCondominio> salas;
 }

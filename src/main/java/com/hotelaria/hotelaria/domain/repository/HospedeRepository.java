@@ -1,13 +1,14 @@
 package com.hotelaria.hotelaria.domain.repository;
 
 import com.hotelaria.hotelaria.domain.entity.Hospede;
+import com.hotelaria.hotelaria.domain.entity.Hotel;
 import com.hotelaria.hotelaria.domain.entity.ReservaAcomodacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,12 +24,11 @@ public interface HospedeRepository extends JpaRepository<Hospede, Long> {
   void removeHospedeById(Long hospedeId);
 
   @Modifying
-  @Transactional
   @Query(
     value = "UPDATE hospede SET data_registro = ?2 WHERE id = ?1",
     nativeQuery = true
   )
-  void updateHospede(Long hospedeId, LocalDateTime dataRegistro);
+  void updateHospede(Long hospedeId, LocalDate dataRegistro);
 
   @Modifying
   @Transactional
@@ -36,5 +36,8 @@ public interface HospedeRepository extends JpaRepository<Hospede, Long> {
     value = "INSERT INTO hospede (pessoa_id, data_registro) VALUES (?1, ?2)",
     nativeQuery = true
   )
-  void insert(Long pessoaId, LocalDateTime dataRegistro);
+  void create(Long pessoaId, LocalDate dataRegistro);
+
+  @Query(value = "SELECT * FROM hospede WHERE id = LAST_INSERT_ID()", nativeQuery = true)
+  Hospede retrieveLastCreated();
 }

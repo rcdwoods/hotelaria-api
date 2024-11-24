@@ -6,6 +6,7 @@ import com.hotelaria.hotelaria.domain.service.AcomodacaoService;
 import com.hotelaria.hotelaria.domain.service.HotelService;
 import com.hotelaria.hotelaria.infra.mapper.AcomodacaoMapper;
 import com.hotelaria.hotelaria.infra.mapper.HotelMapper;
+import io.swagger.annotations.Api;
 import io.swagger.api.HoteisApi;
 import io.swagger.model.DisponibilidadeResponse;
 import io.swagger.model.HotelRequest;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.*;
 
+@Api(tags = "hoteis")
 @RestController
 @RequestMapping("/hoteis")
 @RequiredArgsConstructor
@@ -31,15 +33,16 @@ public class HotelResource implements HoteisApi {
   @Override
   @PostMapping
   public ResponseEntity<HotelResponse> createHotel(@RequestBody HotelRequest hotelRequest) {
-    Hotel createdHotel = hotelService.create(hotelRequest);
+    hotelService.create(hotelRequest);
+    Hotel createdHotel = hotelService.retrieveLastCreated();
     return ResponseEntity.ok(hotelMapper.toResponse(createdHotel));
   }
 
   @Override
   @PutMapping("/{hotelId}")
-  public ResponseEntity<HotelResponse> updateHotel(@PathVariable Long hotelId, @RequestBody UpdateHotelRequest body) {
-    Hotel updatedHotel = hotelService.update(hotelId, body);
-    return ResponseEntity.ok(hotelMapper.toResponse(updatedHotel));
+  public ResponseEntity<Void> updateHotel(@PathVariable Long hotelId, @RequestBody UpdateHotelRequest body) {
+    hotelService.update(hotelId, body);
+    return ResponseEntity.ok().build();
   }
 
   @Override
@@ -64,14 +67,15 @@ public class HotelResource implements HoteisApi {
     return ResponseEntity.ok(hoteisConvertidos);
   }
 
+  @Override
   @GetMapping("/{id}/acomodacoes-disponiveis")
-  public ResponseEntity<List<DisponibilidadeResponse>> retrieveAll(
+  public ResponseEntity<List<DisponibilidadeResponse>> retrieveDisponibilidade(
     @PathVariable Long id,
-    @RequestParam(name = "from") LocalDate from,
-    @RequestParam(name = "to") LocalDate to
+    @RequestParam(name = "from") String from,
+    @RequestParam(name = "to") String to
   ) {
     Map<LocalDate, List<Acomodacao>> acomodacoesEncontradas = acomodacaoService.
-      retrieveAvailableFromHotelBetween(id, from, to);
+      retrieveAvailabilityFromHotelBetween(id, LocalDate.parse(from), LocalDate.parse(to));
 
     return ResponseEntity.ok(toDisponibilidadeResponse(acomodacoesEncontradas));
   }

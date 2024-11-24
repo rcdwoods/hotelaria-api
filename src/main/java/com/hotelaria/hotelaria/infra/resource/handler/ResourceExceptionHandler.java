@@ -6,15 +6,16 @@ import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import com.hotelaria.hotelaria.domain.exception.BusinessException;
 import com.hotelaria.hotelaria.domain.exception.EntityNotFoundException;
 import com.hotelaria.hotelaria.domain.exception.ValidationException;
-import javax.validation.UnexpectedTypeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -28,6 +29,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.UnexpectedTypeException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -59,7 +61,7 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex,
-	                                                            WebRequest request) {
+																															WebRequest request) {
 
 		HttpStatus status = HttpStatus.NOT_FOUND;
 		ProblemType problemType = ProblemType.RESOURCE_NOT_FOUND;
@@ -151,6 +153,113 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
 
+	@Override
+	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex,
+																																 HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+		ProblemType problemType = ProblemType.RESOURCE_NOT_FOUND;
+		String detail = String.format("The resource %s you tried to access does not exist.",
+			ex.getRequestURL());
+
+		Problem problem = createProblemBuilder(status, problemType, detail)
+			.userMessage(GENERIC_MESSAGE_ERROR)
+			.build();
+
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+		ProblemType problemType = ProblemType.INVALID_PARAMETER;
+		String detail = ex.getMessage();
+
+		log.error(ex.getMessage(), ex);
+
+		Problem problem = createProblemBuilder(status, problemType, detail)
+			.userMessage(detail)
+			.build();
+
+		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex,
+																																		HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+		return ResponseEntity.status(status).headers(headers).build();
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status,
+																											 WebRequest request) {
+
+
+		return handleValidationInternal(ex, ex.getBindingResult(), headers, status, request);
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+																																HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+		return handleValidationInternal(ex, ex.getBindingResult(), headers, status, request);
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
+																													 HttpStatus status, WebRequest request) {
+
+		if (body == null) {
+			body = Problem.builder()
+				.timestamp(OffsetDateTime.now())
+				.title(status.getReasonPhrase())
+				.status(status.value())
+				.userMessage(GENERIC_MESSAGE_ERROR)
+				.build();
+		} else if (body instanceof String) {
+			body = Problem.builder()
+				.timestamp(OffsetDateTime.now())
+				.title((String) body)
+				.status(status.value())
+				.userMessage(GENERIC_MESSAGE_ERROR)
+				.build();
+		}
+
+		return super.handleExceptionInternal(ex, body, headers, status, request);
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,
+																											HttpStatus status, WebRequest request) {
+
+		if (ex instanceof MethodArgumentTypeMismatchException) {
+			return handleMethodArgumentTypeMismatch(
+				(MethodArgumentTypeMismatchException) ex, headers, status, request);
+		}
+
+		return super.handleTypeMismatch(ex, headers, status, request);
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+																																HttpHeaders headers, HttpStatus status, WebRequest request) {
+		Throwable rootCause = ExceptionUtils.getRootCause(ex);
+
+		if (rootCause instanceof InvalidFormatException) {
+			return handleInvalidFormat((InvalidFormatException) rootCause, headers, status, request);
+		} else if (rootCause instanceof PropertyBindingException) {
+			return handlePropertyBinding((PropertyBindingException) rootCause, headers, status, request);
+		}
+
+		ProblemType problemType = ProblemType.UNREADABLE_MESSAGE;
+		String detail = "The request body is invalid. Check for a syntax error.";
+
+		Problem problem = createProblemBuilder(status, problemType, detail)
+			.userMessage(GENERIC_MESSAGE_ERROR)
+			.build();
+
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+
 	private ResponseEntity<Object> handleMethodArgumentTypeMismatch(
 		MethodArgumentTypeMismatchException ex, HttpHeaders headers,
 		HttpStatus status, WebRequest request) {
@@ -169,7 +278,7 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	private ResponseEntity<Object> handleValidationInternal(Exception ex, BindingResult bindingResult, HttpHeaders headers,
-	                                                        HttpStatus status, WebRequest request) {
+																													HttpStatus status, WebRequest request) {
 
 		ProblemType problemType = ProblemType.INVALID_DATA;
 
@@ -204,7 +313,7 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 
 
 	private ResponseEntity<Object> handlePropertyBinding(PropertyBindingException ex,
-	                                                     HttpHeaders headers, HttpStatus status, WebRequest request) {
+																											 HttpHeaders headers, HttpStatus status, WebRequest request) {
 
 		String path = joinPath(ex.getPath());
 
@@ -220,7 +329,7 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	private ResponseEntity<Object> handleInvalidFormat(InvalidFormatException ex,
-	                                                   HttpHeaders headers, HttpStatus status, WebRequest request) {
+																										 HttpHeaders headers, HttpStatus status, WebRequest request) {
 
 		String path = joinPath(ex.getPath());
 
@@ -237,7 +346,7 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	private Problem.ProblemBuilder createProblemBuilder(HttpStatus status,
-	                                                    ProblemType problemType, String detail) {
+																											ProblemType problemType, String detail) {
 
 		return Problem.builder()
 			.timestamp(OffsetDateTime.now())

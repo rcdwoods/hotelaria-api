@@ -17,7 +17,15 @@ public class PoliticaDeUsoService {
     return politicaDeUsoRepository.retrieveLastCreated();
   }
 
-  public List<PoliticaDeUso> retrieveAll() {
-    return politicaDeUsoRepository.retrieveAll();
+  public void removeAllFromHotel(Long hotelId) {
+    politicaDeUsoRepository.removeAllFromHotel(hotelId);
+  }
+
+  public boolean existsById(Long politicaDeUsoId) {
+    return politicaDeUsoRepository.existsById(politicaDeUsoId);
+  }
+
+  public List<PoliticaDeUso> retrieveAllByAcomodacaoFromHotel(Long acomodacaoId, Long hotelId) {
+    return politicaDeUsoRepository.retrieveAllByAcomodacaoFromHotel(acomodacaoId, hotelId);
   }
 }

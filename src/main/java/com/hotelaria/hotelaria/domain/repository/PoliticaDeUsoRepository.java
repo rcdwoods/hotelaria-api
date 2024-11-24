@@ -6,9 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface PoliticaDeUsoRepository extends JpaRepository<PoliticaDeUso, Long> {
   @Query(value = "SELECT * FROM politica_de_uso", nativeQuery = true)
@@ -43,4 +41,21 @@ public interface PoliticaDeUsoRepository extends JpaRepository<PoliticaDeUso, Lo
 
   @Query(value = "SELECT * FROM politica_de_uso WHERE id = LAST_INSERT_ID()", nativeQuery = true)
   PoliticaDeUso retrieveLastCreated();
+
+  @Query(value = "EXISTS(SELECT 1 FROM politica_de_uso WHERE id = ?1)", nativeQuery = true)
+  boolean existsById(long politicaDeUsoId);
+
+  @Query(
+    value = "SELECT * FROM politica_de_uso p INNER JOIN acomodacao_politica_de_uso ap on ap.politica_de_uso_id = p.id " +
+      "WHERE ap.numero_acomodacao = ?1 AND ap.hotel_id = ?2",
+    nativeQuery = true
+  )
+  List<PoliticaDeUso> retrieveAllByAcomodacaoFromHotel(Long numeroAcomodacao, Long hotelId);
+
+  @Modifying
+  @Query(
+    value = "DELETE FROM acomodacao_politica_de_uso WHERE hotel_id = ?1",
+    nativeQuery = true
+  )
+  void removeAllFromHotel(Long hotelId);
 }

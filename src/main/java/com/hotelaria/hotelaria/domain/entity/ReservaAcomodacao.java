@@ -4,6 +4,8 @@ import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,4 +39,9 @@ public class ReservaAcomodacao {
   private List<Pedido> pedidos;
   @OneToMany(mappedBy = "reservaAcomodacao")
   private List<ReservaEstacionamento> reservasEstacionamento;
+
+  public BigDecimal getValorTotal() {
+    long days = Duration.between(dataEsperadaCheckin.withHour(12), dataEsperadaCheckout.withHour(12)).toDays();
+    return acomodacao.getValorDiaria().multiply(BigDecimal.valueOf(days));
+  }
 }
