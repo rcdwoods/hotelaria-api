@@ -501,13 +501,12 @@ CREATE TABLE livro
 
 CREATE TABLE locacao_livro
 (
-    id                      BIGINT AUTO_INCREMENT NOT NULL,
     livro_id                BIGINT NOT NULL,
     reserva_acomodacao_id   BIGINT NOT NULL,
     data_locacao            DATE   NOT NULL,
     data_esperada_devolucao DATE   NOT NULL,
     data_devolucao          DATE NULL,
-    PRIMARY KEY (id),
+    PRIMARY KEY (livro_id, reserva_acomodacao_id),
     FOREIGN KEY (livro_id) REFERENCES livro (id),
     FOREIGN KEY (reserva_acomodacao_id) REFERENCES reserva_acomodacao (id)
 );
@@ -1211,17 +1210,17 @@ VALUES (1, 'O Morro dos Ventos Uivantes', 'Emily Brontë', 'Editora X', 1847, 32
        (29, 'Inferno', 'Dan Brown', 'Editora D', 2013, 480),
        (30, 'Anjos e Demônios', 'Dan Brown', 'Editora D', 2000, 616);
 
-INSERT INTO locacao_livro (id, livro_id, reserva_acomodacao_id, data_locacao, data_esperada_devolucao, data_devolucao)
-VALUES (1, 1, 1, '2024-11-01', '2024-11-08', '2024-11-07'),
-       (2, 2, 2, '2024-11-03', '2024-11-10', '2024-11-09'),
-       (3, 3, 3, '2024-11-04', '2024-11-11', '2024-11-11'),
-       (4, 4, 4, '2024-11-05', '2024-11-12', '2024-11-10'),
-       (5, 5, 5, '2024-11-06', '2024-11-13', '2024-11-13'),
-       (6, 6, 6, '2024-11-07', '2024-11-14', NULL),
-       (7, 7, 7, '2024-11-08', '2024-11-15', NULL),
-       (8, 8, 8, '2024-11-09', '2024-11-16', '2024-11-15'),
-       (9, 9, 9, '2024-11-10', '2024-11-17', NULL),
-       (10, 10, 10, '2024-11-11', '2024-11-18', '2024-11-18');
+INSERT INTO locacao_livro (livro_id, reserva_acomodacao_id, data_locacao, data_esperada_devolucao, data_devolucao)
+VALUES (1, 1, '2024-11-01', '2024-11-08', '2024-11-07'),
+       (2, 2, '2024-11-03', '2024-11-10', '2024-11-09'),
+       (3, 3, '2024-11-04', '2024-11-11', '2024-11-11'),
+       (4, 4, '2024-11-05', '2024-11-12', '2024-11-10'),
+       (5, 5, '2024-11-06', '2024-11-13', '2024-11-13'),
+       (6, 6, '2024-11-07', '2024-11-14', NULL),
+       (7, 7, '2024-11-08', '2024-11-15', NULL),
+       (8, 8, '2024-11-09', '2024-11-16', '2024-11-15'),
+       (9, 9, '2024-11-10', '2024-11-17', NULL),
+       (10, 10, '2024-11-11', '2024-11-18', '2024-11-18');
 
 INSERT INTO biblioteca_livro (livro_id, biblioteca_id)
 VALUES (1, 1),
@@ -1287,29 +1286,29 @@ VALUES (1, 1),
 
 INSERT INTO veiculo (id, modelo, marca, ano_fabricacao, capacidade, tipo, placa, hotel_id)
 VALUES (1, 'SPRINTER 415', 'MERCEDES-BENZ', 2020, 15, 'VAN', 'ABC1234', 1),
-       (2, 'COROLLA', 'TOYOTA', 2022, 4, 'CARRO', 'DEF5678', 2),
-       (3, 'CIVIC', 'HONDA', 2021, 4, 'CARRO', 'GHI9012', 3),
-       (4, 'DUSTER', 'RENAULT', 2023, 5, 'SUV', 'JKL3456', 4),
-       (5, 'MASTER EXECUTIVE', 'RENAULT', 2020, 16, 'VAN', 'MNO7890', 1),
-       (6, 'SPIN', 'CHEVROLET', 2021, 7, 'MINIVAN', 'PQR1234', 2),
-       (7, 'HILUX', 'TOYOTA', 2022, 5, 'PICKUP', 'STU5678', 3),
+       (2, 'COROLLA', 'TOYOTA', 2022, 4, 'CARRO', 'DEF5678', 1),
+       (3, 'CIVIC', 'HONDA', 2021, 4, 'CARRO', 'GHI9012', 2),
+       (4, 'DUSTER', 'RENAULT', 2023, 5, 'SUV', 'JKL3456', 2),
+       (5, 'MASTER EXECUTIVE', 'RENAULT', 2020, 16, 'VAN', 'MNO7890', 3),
+       (6, 'SPIN', 'CHEVROLET', 2021, 7, 'MINIVAN', 'PQR1234', 3),
+       (7, 'HILUX', 'TOYOTA', 2022, 5, 'PICKUP', 'STU5678', 4),
        (8, 'FIORINO', 'FIAT', 2019, 2, 'UTILITARIO', 'VWX9012', 4);
 
 INSERT INTO transporte (id, tipo, valor, descricao, hotel_partida_id, reserva_acomodacao_id, horario_partida,
                         horario_esperado_chegada, horario_chegada, veiculo_id)
 VALUES (1, 'TRANSFER', 150.00, 'Transporte para o aeroporto com conforto e segurança.', 1, 1, '2024-11-23 08:00:00',
         '2024-11-23 09:30:00', '2024-11-23 09:25:00', 1),
-       (2, 'TOUR', 250.00, 'Passeio turístico pela cidade com guia incluso.', 2, 2, '2024-11-23 10:00:00',
+       (2, 'TOUR', 250.00, 'Passeio turístico pela cidade com guia incluso.', 1, 2, '2024-11-23 10:00:00',
         '2024-11-23 14:00:00', '2024-11-23 14:15:00', 2),
-       (3, 'TRANSFER', 100.00, 'Viagem rápida até o shopping mais próximo.', 3, 3, '2024-11-23 11:00:00',
+       (3, 'TRANSFER', 100.00, 'Viagem rápida até o shopping mais próximo.', 2, 3, '2024-11-23 11:00:00',
         '2024-11-23 11:30:00', '2024-11-23 11:25:00', 3),
-       (4, 'TOUR', 200.00, 'Visita guiada a pontos históricos da cidade.', 4, 4, '2024-11-23 13:00:00',
+       (4, 'TOUR', 200.00, 'Visita guiada a pontos históricos da cidade.', 2, 4, '2024-11-23 13:00:00',
         '2024-11-23 17:00:00', NULL, 4),
-       (5, 'TRANSFER', 120.00, 'Deslocamento confortável para a estação de trem.', 1, 5, '2024-11-23 09:00:00',
+       (5, 'TRANSFER', 120.00, 'Deslocamento confortável para a estação de trem.', 3, 5, '2024-11-23 09:00:00',
         '2024-11-23 09:45:00', '2024-11-23 09:40:00', 5),
-       (6, 'TOUR', 300.00, 'Excursão a um parque natural nas proximidades.', 2, 6, '2024-11-23 07:00:00',
+       (6, 'TOUR', 300.00, 'Excursão a um parque natural nas proximidades.', 3, 6, '2024-11-23 07:00:00',
         '2024-11-23 13:00:00', NULL, 6),
-       (7, 'TRANSFER', 80.00, 'Corrida até o centro da cidade.', 3, 7, '2024-11-23 15:00:00', '2024-11-23 15:30:00',
+       (7, 'TRANSFER', 80.00, 'Corrida até o centro da cidade.', 4, 7, '2024-11-23 15:00:00', '2024-11-23 15:30:00',
         '2024-11-23 15:20:00', 7),
        (8, 'TOUR', 180.00, 'Passeio até a região vinícola local.', 4, 8, '2024-11-23 16:00:00', '2024-11-23 19:00:00',
         '2024-11-23 18:50:00', 8);

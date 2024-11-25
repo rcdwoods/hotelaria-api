@@ -3,10 +3,7 @@ package com.hotelaria.hotelaria.domain.service;
 import com.hotelaria.hotelaria.domain.entity.Hotel;
 import com.hotelaria.hotelaria.domain.entity.RegistroImobiliario;
 import com.hotelaria.hotelaria.domain.exception.HotelNotFoundException;
-import com.hotelaria.hotelaria.domain.repository.CondominioRepository;
-import com.hotelaria.hotelaria.domain.repository.CozinhaRepository;
-import com.hotelaria.hotelaria.domain.repository.EstoqueRepository;
-import com.hotelaria.hotelaria.domain.repository.HotelRepository;
+import com.hotelaria.hotelaria.domain.repository.*;
 import io.swagger.model.HotelRequest;
 import io.swagger.model.UpdateHotelRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +24,15 @@ public class HotelService {
   private final CondominioRepository condominioRepository;
   private final EstoqueRepository estoqueRepository;
   private final CozinhaRepository cozinhaRepository;
+  private final BibliotecaRepository bibliotecaRepository;
+  private final LivroRepository livroRepository;
+  private final VeiculoRepository veiculoRepository;
+  private final TransporteRepository transporteRepository;
+  private final AcademiaRepository academiaRepository;
+  private final AtividadeLazerRepository atividadeLazerRepository;
+  private final EspacoDeEventoRepository espacoDeEventoRepository;
+  private final EstacionamentoRepository estacionamentoRepository;
+  private final FuncionarioRepository funcionarioRepository;
 
   public List<Hotel> retrieveAll() {
     return hotelRepository.retrieveAll().stream().map(hotel -> {
@@ -91,6 +97,25 @@ public class HotelService {
 
     Hotel hotelEncontrado = hotel.get();
 
+    funcionarioRepository.removeAllRequisicoesWithHospedesFromFuncionariosFromHotel(hotelId);
+    funcionarioRepository.removeAllRequisicoesFromFuncionariosFromHotel(hotelId);
+    funcionarioRepository.removeAllContratosDeTrabalhoFromHotel(hotelId);
+    funcionarioRepository.removeAllFromHotel(hotelId);
+    estacionamentoRepository.removeReservaEstacionamentosFromHotel(hotelId);
+    estacionamentoRepository.removeFromHotel(hotelId);
+    espacoDeEventoRepository.removeManutencoesFromHotel(hotelId);
+    espacoDeEventoRepository.removeLocaisDeEventoFromHotel(hotelId);
+    espacoDeEventoRepository.removeFromHotel(hotelId);
+    atividadeLazerRepository.removeInscricoesFromHotel(hotelId);
+    atividadeLazerRepository.removeAllFromHotel(hotelId);
+    academiaRepository.removePoliticasDeUsoFromHotel(hotelId);
+    academiaRepository.removeFromHotel(hotelId);
+    transporteRepository.removeAllFromHotel(hotelId);
+    veiculoRepository.removeAllFromHotel(hotelId);
+    livroRepository.removeAllLocacoesFromHotel(hotelId);
+    bibliotecaRepository.removeAllPoliticasDeUsoFromHotel(hotelId);
+    bibliotecaRepository.removeAllLivrosFromHotel(hotelId);
+    bibliotecaRepository.removeFromHotel(hotelId);
     cozinhaRepository.removeFromHotel(hotelId);
     estoqueRepository.removeProductsFromHotelEstoque(hotelId);
     estoqueRepository.removeFromHotel(hotelId);
