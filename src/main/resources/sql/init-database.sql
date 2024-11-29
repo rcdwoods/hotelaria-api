@@ -253,7 +253,6 @@ CREATE TABLE vale
     tipo                          VARCHAR(60)    NOT NULL,
     descricao                     VARCHAR(120)   NOT NULL,
     valor                         DECIMAL(10, 2) NOT NULL,
-    data_hora                     DATETIME       NOT NULL,
     percentual_de_desconto        DECIMAL(10, 2) NOT NULL,
     tipo_contrato_beneficiario_id BIGINT         NOT NULL,
     PRIMARY KEY (id),
@@ -768,7 +767,7 @@ VALUES (1, '2024-11-01 14:23:00'),
        (20, '2024-11-06 09:55:00');
 
 INSERT INTO funcionario (pessoa_id, email, hotel_id)
-VALUES (21, 'joao.silva@hotel.com', 1),
+VALUES (1, 'joao.silva@hotel.com', 1),
        (22, 'maria.oliveira@hotel.com', 1),
        (23, 'carlos.souza@hotel.com', 2),
        (24, 'ana.santos@hotel.com', 2),
@@ -862,14 +861,14 @@ VALUES ('Salão Principal', 1, 50, 200, 1),
        ('Palco Aberto', 9, 80, 100, 4),
        ('Sala de Palestra', 10, 70, 120, 4);
 
-INSERT INTO vale (tipo, descricao, valor, data_hora, percentual_de_desconto, tipo_contrato_beneficiario_id)
-VALUES ('Alimentação', 'Vale para compras em supermercados', 800.00, '2024-01-10 09:00:00', 3.00, 1),
-       ('Alimentação', 'Vale para compras em supermercados', 300.00, '2024-01-10 09:00:00', 3.00, 3),
-       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 300.00, '2024-01-15 08:30:00', 2.00, 1),
-       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 250.00, '2024-01-15 08:30:00', 2.00, 2),
-       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 300.00, '2024-01-15 08:30:00', 0.00, 3),
-       ('Refeição', 'Vale refeição para uso em restaurantes', 600.00, '2024-01-20 12:00:00', 3.00, 1),
-       ('Refeição', 'Vale refeição para uso em restaurantes', 600.00, '2024-01-20 12:00:00', 3.00, 3);
+INSERT INTO vale (tipo, descricao, valor, percentual_de_desconto, tipo_contrato_beneficiario_id)
+VALUES ('Alimentação', 'Vale para compras em supermercados', 800.00, 3.00, 1),
+       ('Alimentação', 'Vale para compras em supermercados', 300.00, 3.00, 3),
+       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 300.00, 2.00, 1),
+       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 250.00, 2.00, 2),
+       ('Transporte', 'Vale transporte mensal para deslocamento urbano', 300.00, 0.00, 3),
+       ('Refeição', 'Vale refeição para uso em restaurantes', 600.00, 3.00, 1),
+       ('Refeição', 'Vale refeição para uso em restaurantes', 600.00, 3.00, 3);
 
 INSERT INTO estacionamento (tipo, capacidade, valor_diaria, hotel_id)
 VALUES ('COBERTO', 50, 25.00, 1),
